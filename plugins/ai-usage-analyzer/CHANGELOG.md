@@ -1,5 +1,22 @@
 # Changelog
 
+## 0.7.0 -- 2026-11-19
+
+**Renamed from `claude-usage-analyzer` to `ai-usage-analyzer`.** Plugin
+names starting with `claude-` are reserved for Anthropic, and the
+marketplace's strict validation rejected the old name.
+
+- Uninstall `claude-usage-analyzer` and install
+  `ai-usage-analyzer@shadetree-ai-plugins`. The old name no longer exists
+  in the marketplace, so an update from it won't find this release.
+- The skill is now `ai-usage-analyzer`, the Python package
+  `shadetree_ai_plugins_ai_usage_analyzer`, and the state-dir override
+  `SHADETREE_AI_PLUGINS_AI_USAGE_ANALYZER_STATE_DIR`.
+- On first use, an existing `~/.shadetree-ai-plugins/claude-usage-analyzer/`
+  (dashboard, plan-usage history, parsed exports) is moved to
+  `~/.shadetree-ai-plugins/ai-usage-analyzer/`. It's never merged into or
+  overwrites a state directory that already exists.
+
 ## 0.6.3 -- 2026-11-01
 
 - Bundle shared helpers and the startup hook as real files rather than

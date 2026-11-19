@@ -5,9 +5,9 @@ requires-python = ">=3.12, <3.14"
 [manifest]
 members = [
     "shadetree-ai-plugins",
+    "shadetree-ai-plugins-ai-usage-analyzer",
     "shadetree-ai-plugins-audiobook-creator",
     "shadetree-ai-plugins-career-navigator",
-    "shadetree-ai-plugins-claude-usage-analyzer",
     "shadetree-ai-plugins-common",
     "shadetree-ai-plugins-email-domain-reputation",
     "shadetree-ai-plugins-iphone",
@@ -1326,6 +1326,21 @@ dev = [
 ]
 
 [[package]]
+name = "shadetree-ai-plugins-ai-usage-analyzer"
+version = "0.7.0"
+source = { editable = "plugins/ai-usage-analyzer" }
+dependencies = [
+    { name = "fastmcp" },
+    { name = "keyring" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "fastmcp", specifier = ">=4.0" },
+    { name = "keyring", specifier = ">=25.5.0" },
+]
+
+[[package]]
 name = "shadetree-ai-plugins-audiobook-creator"
 version = "0.1.0"
 source = { editable = "plugins/audiobook-creator" }
@@ -1356,21 +1371,6 @@ dependencies = [
 [package.metadata]
 requires-dist = [
     { name = "fastmcp", specifier = ">=3.4" },
-    { name = "keyring", specifier = ">=25.5.0" },
-]
-
-[[package]]
-name = "shadetree-ai-plugins-claude-usage-analyzer"
-version = "0.6.2"
-source = { editable = "plugins/claude-usage-analyzer" }
-dependencies = [
-    { name = "fastmcp" },
-    { name = "keyring" },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "fastmcp", specifier = ">=4.0" },
     { name = "keyring", specifier = ">=25.5.0" },
 ]
 

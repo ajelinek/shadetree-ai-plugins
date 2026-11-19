@@ -3,7 +3,7 @@ description: Review how you've actually been using Claude and build a dashboard 
 argument-hint: "[time window, e.g. 90d or 'all']"
 ---
 
-Run the **claude-usage-analyzer** skill's workflow start to finish, exactly as
+Run the **ai-usage-analyzer** skill's workflow start to finish, exactly as
 written in its `SKILL.md`. That file is the single source of truth for the steps
 -- follow it there rather than working from anything restated here.
 

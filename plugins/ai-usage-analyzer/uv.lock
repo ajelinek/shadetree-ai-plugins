@@ -1100,8 +1100,8 @@ wheels = [
 ]
 
 [[package]]
-name = "shadetree-ai-plugins-claude-usage-analyzer"
-version = "0.6.2"
+name = "shadetree-ai-plugins-ai-usage-analyzer"
+version = "0.7.0"
 source = { editable = "." }
 dependencies = [
     { name = "fastmcp" },

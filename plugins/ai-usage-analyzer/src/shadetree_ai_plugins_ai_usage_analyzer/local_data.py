@@ -2,7 +2,7 @@
 
 Everything here is metadata-first and defensive: Claude Desktop's on-disk
 layout is not a documented public API, it was reverse-engineered by direct
-filesystem inspection (see skills/claude-usage-analyzer/references/data-sources.md
+filesystem inspection (see skills/ai-usage-analyzer/references/data-sources.md
 for the full writeup and provenance), and it is a *cache* the Desktop app
 maintains for itself, not a source of truth this module can assume is
 complete or stable across versions. Every reader here is best-effort: a

@@ -202,7 +202,7 @@ checkouts.
 | `website-health-analytics` | deferred — may not move |
 
 `imessage`, `icallhistory`, and `cc-data-analyzer` already made the trip,
-as `plugins/iphone` and `plugins/claude-usage-analyzer`.
+as `plugins/iphone` and `plugins/ai-usage-analyzer`.
 
 Two things to watch when migrating one:
 

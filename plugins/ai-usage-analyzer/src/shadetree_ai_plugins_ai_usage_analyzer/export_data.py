@@ -6,7 +6,7 @@ This is a *different* format from a Claude Code CLI session log
 (`~/.claude/projects/*.jsonl`, handled by local_data.py) or a single pasted
 conversation transcript -- it covers claude.ai web chats only, with zero
 overlap with local_data.py's Desktop/Cowork/CLI sources. See
-skills/claude-usage-analyzer/references/data-sources.md section 4 for how
+skills/ai-usage-analyzer/references/data-sources.md section 4 for how
 the two combine.
 
 Export schemas vary by account/export vintage and aren't a documented

@@ -1,4 +1,4 @@
-"""FastMCP server bundled with the shadetree-ai-plugins 'claude-usage-analyzer'
+"""FastMCP server bundled with the shadetree-ai-plugins 'ai-usage-analyzer'
 plugin.
 
 Scope is Claude Desktop / Cowork -- this plugin is for business users of
@@ -51,7 +51,7 @@ Nine tools, each thin over one of this package's modules:
   history log so re-runs show progress over time.
 
 None of these tools move, rename, or delete a chat or Project -- this
-plugin is read-only analysis. See skills/claude-usage-analyzer/SKILL.md
+plugin is read-only analysis. See skills/ai-usage-analyzer/SKILL.md
 for the full workflow these are meant to be called in.
 """
 
@@ -66,10 +66,10 @@ from shadetree_ai_plugins_common import get_logger, state_dir
 
 from . import dashboard, export_data, local_data
 
-logger = get_logger("shadetree-ai-plugins-claude-usage-analyzer")
+logger = get_logger("shadetree-ai-plugins-ai-usage-analyzer")
 
 mcp = FastMCP(
-    name="shadetree-ai-plugins-claude-usage-analyzer",
+    name="shadetree-ai-plugins-ai-usage-analyzer",
     instructions=(
         "Read-only analysis of local Claude Desktop/Cowork usage plus an optional "
         "claude.ai account data export, rendered as a self-updating HTML dashboard. "
@@ -95,10 +95,27 @@ _WRITE_LOCAL = {
 
 
 def _default_state_dir() -> str:
-    override = os.environ.get("SHADETREE_AI_PLUGINS_CLAUDE_USAGE_ANALYZER_STATE_DIR")
+    override = os.environ.get("SHADETREE_AI_PLUGINS_AI_USAGE_ANALYZER_STATE_DIR")
     if override:
         return override
-    return str(state_dir("claude-usage-analyzer"))
+    _migrate_legacy_state_dir()
+    return str(state_dir("ai-usage-analyzer"))
+
+
+def _migrate_legacy_state_dir() -> None:
+    """Carry state over from the plugin's pre-0.7.0 name, claude-usage-analyzer.
+
+    Moves the old directory into place once, only when the new one doesn't
+    exist yet, so dashboard history survives the rename. Never merges or
+    overwrites; a failed move just leaves the old directory where it was.
+    """
+    root = Path.home() / ".shadetree-ai-plugins"
+    legacy, current = root / "claude-usage-analyzer", root / "ai-usage-analyzer"
+    if legacy.is_dir() and not current.exists():
+        try:
+            legacy.rename(current)
+        except OSError:
+            logger.warning("Could not move legacy state dir %s to %s", legacy, current)
 
 
 @mcp.tool(annotations=_READ_ONLY)

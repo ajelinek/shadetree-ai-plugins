@@ -1,5 +1,5 @@
 ---
-name: claude-usage-analyzer
+name: ai-usage-analyzer
 description: >-
   Read-only analysis of how the user actually uses Claude -- local Claude
   Desktop/Cowork data on this machine, plus an optional claude.ai account

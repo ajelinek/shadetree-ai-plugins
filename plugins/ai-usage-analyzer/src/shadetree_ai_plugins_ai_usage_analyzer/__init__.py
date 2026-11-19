@@ -1,4 +1,4 @@
-"""shadetree-ai-plugins 'claude-usage-analyzer' plugin server package."""
+"""shadetree-ai-plugins 'ai-usage-analyzer' plugin server package."""
 
 from .server import mcp
 

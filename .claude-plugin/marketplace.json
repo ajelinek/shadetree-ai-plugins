@@ -17,8 +17,8 @@
       "description": "Conversational career exploration for a high school student: infers a RIASEC (Holland Code) profile through natural conversation, then matches it against a local O*NET occupational dataset. Fully local — no accounts, no hosting, no network calls at runtime."
     },
     {
-      "name": "claude-usage-analyzer",
-      "source": "./plugins/claude-usage-analyzer",
+      "name": "ai-usage-analyzer",
+      "source": "./plugins/ai-usage-analyzer",
       "description": "Analyzes local Claude Desktop/Cowork usage plus an optional claude.ai account export, and produces a live, self-updating HTML dashboard covering a workspace reorganization (which chats belong in which Projects, each Project's name/description/custom instructions, and file structure), a usage & best-practices review (project/chat counts, model-usage breakdown, chats that used an overly complex model, and recommended public skills/plugins/connectors vs. custom ones worth building), and a workspace checkup that audits your standing custom instructions for bloat and duplication. Built for business users of the Claude Desktop app; Claude Code CLI sessions are deliberately excluded. Read-only analysis; never moves, renames, or deletes anything on its own."
     },
     {

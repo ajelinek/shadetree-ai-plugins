@@ -1,4 +1,4 @@
-# claude-usage-analyzer
+# ai-usage-analyzer
 
 Read-only analysis of how you actually use Claude: local Claude
 Desktop/Cowork data on this machine, plus an optional claude.ai account
@@ -35,7 +35,7 @@ into this report would both distort the counts and bury a non-developer in
 irrelevance.
 
 This plugin is primarily its skill
-(`skills/claude-usage-analyzer/SKILL.md`) -- the actual clustering/analysis
+(`skills/ai-usage-analyzer/SKILL.md`) -- the actual clustering/analysis
 reasoning lives there, since deciding "these chats are one real project"
 takes understanding the content, not just running a script. The bundled
 MCP tools are deliberately thin: check access, read/parse data, render the
@@ -56,10 +56,10 @@ folders and why on first run if they aren't visible yet.
 ## Install
 
 In Claude Desktop: **Customize → Plugins → (+) → Add marketplace**, enter
-`ajelinek/shadetree-ai-plugins`, then install `claude-usage-analyzer` from
+`ajelinek/shadetree-ai-plugins`, then install `ai-usage-analyzer` from
 the list. (Equivalent commands also work in a Desktop or Cowork chat
 window: `/plugin marketplace add ajelinek/shadetree-ai-plugins` then
-`/plugin install claude-usage-analyzer@shadetree-ai-plugins`.)
+`/plugin install ai-usage-analyzer@shadetree-ai-plugins`.)
 
 Ask Claude something like "analyze my Claude usage" or "help me organize my
 Claude projects" to start once installed, or run `/analyze-usage`
@@ -68,7 +68,7 @@ Claude projects" to start once installed, or run `/analyze-usage`
 ## What's inside
 
 - `.claude-plugin/plugin.json` / `.mcp.json` -- plugin + MCP server
-  manifest (one server, `shadetree_ai_plugins_claude_usage_analyzer`).
+  manifest (one server, `shadetree_ai_plugins_ai_usage_analyzer`).
 - `fastmcp.json` -- local dev only (`fastmcp run fastmcp.json`), not used
   by the installed plugin.
 - `hooks/check_uv.py` (bundled copy) + `hooks/check_data_access.py` -- two
@@ -82,11 +82,11 @@ Claude projects" to start once installed, or run `/analyze-usage`
   command that runs the skill's workflow start to finish. Takes a time
   window (`/analyze-usage 90d`, `/analyze-usage all`); with no argument it
   asks first, since that choice changes what every number means.
-- `skills/claude-usage-analyzer/SKILL.md` -- the full workflow: check
+- `skills/ai-usage-analyzer/SKILL.md` -- the full workflow: check
   access, decide what data to use (local/export/both), gather it, analyze
   all three lenses (reorganization, usage & best-practices, workspace
   checkup), render the dashboard, present for review.
-- `skills/claude-usage-analyzer/references/data-sources.md` -- exactly
+- `skills/ai-usage-analyzer/references/data-sources.md` -- exactly
   where every local path comes from, per platform, and how local data and
   an account export combine/overlap. Section 1c covers the seven
   account-level files (plan usage history, Desktop settings, installed
@@ -96,7 +96,7 @@ Claude projects" to start once installed, or run `/analyze-usage`
   verified on one machine, with the procedure for re-verifying them. It
   also records the two "confirmed boundaries" earlier releases documented
   that turned out to be false, and the failure mode behind both.
-- `skills/claude-usage-analyzer/references/export-acquisition.md` --
+- `skills/ai-usage-analyzer/references/export-acquisition.md` --
   requesting an account export via an already-available browser-automation
   tool (opt-in, asked every time; this plugin bundles no browser of its
   own), then closing the loop once claude.ai emails the download link:
@@ -105,10 +105,10 @@ Claude projects" to start once installed, or run `/analyze-usage`
   act on the export-ready message automatically (opt-in, with an optional
   scheduled recheck); otherwise pausing to ask the user for the download
   link or the unzipped folder path directly.
-- `skills/claude-usage-analyzer/references/reorganization.md` -- the
+- `skills/ai-usage-analyzer/references/reorganization.md` -- the
   reorganization-lens analysis method and the `projects`/`leftovers` part
   of the `plan` shape that feeds the dashboard.
-- `skills/claude-usage-analyzer/references/usage-efficiency.md` -- the
+- `skills/ai-usage-analyzer/references/usage-efficiency.md` -- the
   usage & best-practices lens: leading with real plan consumption and
   treating model tier, effort, approval mode and surface choice as proxies
   that explain it, turning limit-hit runs into an actionable finding,
@@ -117,7 +117,7 @@ Claude projects" to start once installed, or run `/analyze-usage`
   recommending an existing public skill/plugin/connector vs. a custom one
   worth building; the `model_usage`/`findings`/`recommendations` part of
   the `plan` shape.
-- `skills/claude-usage-analyzer/references/workspace-checkup.md` -- the
+- `skills/ai-usage-analyzer/references/workspace-checkup.md` -- the
   workspace-checkup lens: auditing standing instructions across the
   global/Space/Project layers for cross-layer duplication, text repeated
   Project-to-Project, and content Claude could already derive for itself;
@@ -126,10 +126,10 @@ Claude projects" to start once installed, or run `/analyze-usage`
   toggles -- each named in plain language rather than by its on-disk key,
   because a business user cannot find `keepAwakeEnabled` anywhere in the
   app. Adapted from what Claude Code's `/doctor` does to `CLAUDE.md`.
-- `skills/claude-usage-analyzer/references/dashboard.md` -- rendering,
+- `skills/ai-usage-analyzer/references/dashboard.md` -- rendering,
   the Artifact-publish-if-available fallback logic, and re-running over
   time.
-- `src/shadetree_ai_plugins_claude_usage_analyzer/local_data.py` --
+- `src/shadetree_ai_plugins_ai_usage_analyzer/local_data.py` --
   cross-platform, read-only probing/parsing of local Desktop/Cowork data,
   redacted throughout. Includes a per-message `models_used` tally via
   Cowork's own nested per-session transcript, a `default_model`/`effort`
@@ -150,18 +150,18 @@ Claude projects" to start once installed, or run `/analyze-usage`
   dropped, app-wide toggles, and a strict three-key allowlist over
   `config.json` -- which also holds OAuth token caches and is never read
   wholesale).
-- `src/shadetree_ai_plugins_claude_usage_analyzer/export_data.py` --
+- `src/shadetree_ai_plugins_ai_usage_analyzer/export_data.py` --
   parses a claude.ai account export into paged files instead of one huge
   in-context blob, including a per-conversation `models_used` tally where
   the export schema carries one.
-- `src/shadetree_ai_plugins_claude_usage_analyzer/time_window.py` -- the
+- `src/shadetree_ai_plugins_ai_usage_analyzer/time_window.py` -- the
   shared `since`/`until` scoping used by every data-pulling tool:
   normalizing the two different timestamp shapes the two sources use,
   interval-overlap matching, and the per-response `time_window` report.
-- `src/shadetree_ai_plugins_claude_usage_analyzer/dashboard.py` -- renders
+- `src/shadetree_ai_plugins_ai_usage_analyzer/dashboard.py` -- renders
   the HTML dashboard and keeps a local history log across runs.
 - `src/shadetree_ai_plugins_common` -- bundled copy of the repo's shared helpers
-  (logging, `~/.shadetree-ai-plugins/claude-usage-analyzer/` state dir).
+  (logging, `~/.shadetree-ai-plugins/ai-usage-analyzer/` state dir).
 - `tests/test_server.py` -- in-memory tests against synthetic fixture
   directories; no real Claude Desktop install required. Includes a
   regression guard that fails if a Claude Code CLI data reader is ever
@@ -177,7 +177,7 @@ Claude projects" to start once installed, or run `/analyze-usage`
   The `uv sync --all-packages` is not optional on a fresh clone: this is a
   uv workspace, and it does not install its members by default, so
   `uv run pytest` on its own fails to import the package. Scope it to this
-  plugin with `uv run pytest plugins/claude-usage-analyzer/tests`.
+  plugin with `uv run pytest plugins/ai-usage-analyzer/tests`.
 
 ## Tools
 
@@ -212,7 +212,7 @@ state for the same reason -- a memory file has one last-modified date, not
 a history -- so a window scopes only how many sessions each memory owner
 reached.
 
-See `skills/claude-usage-analyzer/SKILL.md` for the full usage guidance and
+See `skills/ai-usage-analyzer/SKILL.md` for the full usage guidance and
 each reference doc above for the details behind each step.
 
 ## Not built yet (by design, this version)

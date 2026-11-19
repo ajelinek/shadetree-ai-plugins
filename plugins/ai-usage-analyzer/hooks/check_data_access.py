@@ -3,9 +3,9 @@
 
 Plain stdlib only, same reasoning as check_uv.py: invoked directly with a
 bare system Python before this plugin's own deps are installed, so it can't
-import fastmcp/shadetree_ai_plugins_claude_usage_analyzer. It deliberately
+import fastmcp/shadetree_ai_plugins_ai_usage_analyzer. It deliberately
 duplicates (a subset of) the path-candidate logic that
-shadetree_ai_plugins_claude_usage_analyzer.local_data computes for real once
+shadetree_ai_plugins_ai_usage_analyzer.local_data computes for real once
 the MCP server is up -- this hook only ever does existence checks, never
 reads file contents.
 
@@ -71,7 +71,7 @@ def main() -> None:
     desktop_list = "\n".join(f"  - {p}" for p in paths["desktop"])
     output_list = "\n".join(f"  - {p}" for p in paths["output"])
     message = (
-        "claude-usage-analyzer can't see any of the local Claude data locations it "
+        "ai-usage-analyzer can't see any of the local Claude data locations it "
         "expects on this machine:\n\n"
         f"Claude Desktop app data:\n{desktop_list}\n\n"
         f"Claude output folder:\n{output_list}\n\n"

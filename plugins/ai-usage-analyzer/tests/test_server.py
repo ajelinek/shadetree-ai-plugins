@@ -1,4 +1,4 @@
-"""Tests for the shadetree-ai-plugins-claude-usage-analyzer FastMCP server,
+"""Tests for the shadetree-ai-plugins-ai-usage-analyzer FastMCP server,
 all against synthetic fixture directories -- no real Claude Desktop install
 required.
 
@@ -19,9 +19,9 @@ from pathlib import Path
 
 import pytest
 from fastmcp import Client
-from shadetree_ai_plugins_claude_usage_analyzer import dashboard, export_data, local_data
-from shadetree_ai_plugins_claude_usage_analyzer import server as srv
-from shadetree_ai_plugins_claude_usage_analyzer import time_window as tw
+from shadetree_ai_plugins_ai_usage_analyzer import dashboard, export_data, local_data
+from shadetree_ai_plugins_ai_usage_analyzer import server as srv
+from shadetree_ai_plugins_ai_usage_analyzer import time_window as tw
 
 
 def _ms(year: int, month: int, day: int) -> int:
@@ -2191,7 +2191,7 @@ class TestLocateExportDownload:
 
 async def test_locate_export_download_tool_defaults_and_explicit_dirs(tmp_path, monkeypatch):
     monkeypatch.setenv(
-        "SHADETREE_AI_PLUGINS_CLAUDE_USAGE_ANALYZER_STATE_DIR", str(tmp_path / "state")
+        "SHADETREE_AI_PLUGINS_AI_USAGE_ANALYZER_STATE_DIR", str(tmp_path / "state")
     )
     downloads_dir = tmp_path / "Downloads"
     _write_zip(downloads_dir / "my-export.zip", {"conversations.json": "[]"})
@@ -2237,7 +2237,7 @@ def _sample_plan(unfiled_count: str) -> dict:
 
 async def test_render_dashboard_writes_html_and_history(tmp_path, monkeypatch):
     monkeypatch.setenv(
-        "SHADETREE_AI_PLUGINS_CLAUDE_USAGE_ANALYZER_STATE_DIR", str(tmp_path / "state")
+        "SHADETREE_AI_PLUGINS_AI_USAGE_ANALYZER_STATE_DIR", str(tmp_path / "state")
     )
     out_path = tmp_path / "dashboard.html"
 
@@ -2266,7 +2266,7 @@ async def test_render_dashboard_writes_html_and_history(tmp_path, monkeypatch):
 
 async def test_render_dashboard_model_usage_and_findings(tmp_path, monkeypatch):
     monkeypatch.setenv(
-        "SHADETREE_AI_PLUGINS_CLAUDE_USAGE_ANALYZER_STATE_DIR", str(tmp_path / "state2")
+        "SHADETREE_AI_PLUGINS_AI_USAGE_ANALYZER_STATE_DIR", str(tmp_path / "state2")
     )
     out_path = tmp_path / "dashboard2.html"
     plan = {
@@ -2300,7 +2300,7 @@ async def test_render_dashboard_model_usage_and_findings(tmp_path, monkeypatch):
 
 async def test_render_dashboard_recommendations(tmp_path, monkeypatch):
     monkeypatch.setenv(
-        "SHADETREE_AI_PLUGINS_CLAUDE_USAGE_ANALYZER_STATE_DIR", str(tmp_path / "state3")
+        "SHADETREE_AI_PLUGINS_AI_USAGE_ANALYZER_STATE_DIR", str(tmp_path / "state3")
     )
     out_path = tmp_path / "dashboard3.html"
     plan = {
@@ -2748,7 +2748,7 @@ async def test_parse_export_scopes_conversations_to_a_window(tmp_path):
 
 async def test_render_dashboard_shows_the_time_window(tmp_path, monkeypatch):
     monkeypatch.setenv(
-        "SHADETREE_AI_PLUGINS_CLAUDE_USAGE_ANALYZER_STATE_DIR", str(tmp_path / "state_tw")
+        "SHADETREE_AI_PLUGINS_AI_USAGE_ANALYZER_STATE_DIR", str(tmp_path / "state_tw")
     )
     out_path = tmp_path / "dashboard_tw.html"
     async with Client(srv.mcp) as client:
@@ -2761,7 +2761,7 @@ async def test_render_dashboard_shows_the_time_window(tmp_path, monkeypatch):
 
 async def test_render_dashboard_says_so_when_unscoped(tmp_path, monkeypatch):
     monkeypatch.setenv(
-        "SHADETREE_AI_PLUGINS_CLAUDE_USAGE_ANALYZER_STATE_DIR", str(tmp_path / "state_tw2")
+        "SHADETREE_AI_PLUGINS_AI_USAGE_ANALYZER_STATE_DIR", str(tmp_path / "state_tw2")
     )
     out_path = tmp_path / "dashboard_tw2.html"
     async with Client(srv.mcp) as client:
@@ -5147,7 +5147,7 @@ def test_no_cli_surface_remains():
     the source text."""
     package_dir = (
         Path(__file__).resolve().parent.parent
-        / "src" / "shadetree_ai_plugins_claude_usage_analyzer"
+        / "src" / "shadetree_ai_plugins_ai_usage_analyzer"
     )
     banned_symbols = re.compile(r"cli_dir\(|read_cli_sessions")
     checked = 0
@@ -5203,7 +5203,7 @@ def test_server_has_no_network_calls():
     # `.error`, and bare `import urllib` -- stays banned, as do urllib2/3.
     package_dir = (
         Path(__file__).resolve().parent.parent
-        / "src" / "shadetree_ai_plugins_claude_usage_analyzer"
+        / "src" / "shadetree_ai_plugins_ai_usage_analyzer"
     )
     banned_imports = re.compile(
         r"^\s*(import|from)\s+"
@@ -5237,3 +5237,31 @@ def test_network_guard_still_bans_real_network_modules():
 
     for allowed in ("from urllib.parse import urlparse", "import json"):
         assert not banned_imports.search(allowed), f"guard wrongly bans: {allowed}"
+
+
+def test_legacy_state_dir_is_moved_once_on_rename(tmp_path, monkeypatch):
+    monkeypatch.delenv("SHADETREE_AI_PLUGINS_AI_USAGE_ANALYZER_STATE_DIR", raising=False)
+    monkeypatch.setattr(Path, "home", lambda: tmp_path)
+    legacy = tmp_path / ".shadetree-ai-plugins" / "claude-usage-analyzer"
+    legacy.mkdir(parents=True)
+    (legacy / "history.jsonl").write_text("{}\n")
+
+    resolved = Path(srv._default_state_dir())
+
+    assert resolved == tmp_path / ".shadetree-ai-plugins" / "ai-usage-analyzer"
+    assert (resolved / "history.jsonl").read_text() == "{}\n"
+    assert not legacy.exists()
+
+
+def test_legacy_state_dir_never_overwrites_existing_state(tmp_path, monkeypatch):
+    monkeypatch.delenv("SHADETREE_AI_PLUGINS_AI_USAGE_ANALYZER_STATE_DIR", raising=False)
+    monkeypatch.setattr(Path, "home", lambda: tmp_path)
+    root = tmp_path / ".shadetree-ai-plugins"
+    (root / "claude-usage-analyzer").mkdir(parents=True)
+    (root / "ai-usage-analyzer").mkdir()
+    (root / "ai-usage-analyzer" / "history.jsonl").write_text("new\n")
+
+    srv._default_state_dir()
+
+    assert (root / "ai-usage-analyzer" / "history.jsonl").read_text() == "new\n"
+    assert (root / "claude-usage-analyzer").is_dir()
