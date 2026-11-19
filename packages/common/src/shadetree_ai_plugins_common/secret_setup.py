@@ -57,7 +57,10 @@ def main(argv: list[str] | None = None) -> int:
         if not value or value != confirm or not value.isascii() or any(
             ord(char) <= 32 or ord(char) == 127 for char in value
         ):
-            print("Keys must match and contain no whitespace or control characters.", file=sys.stderr)
+            print(
+                "Keys must match and contain no whitespace or control characters.",
+                file=sys.stderr,
+            )
             return 1
         set_secret(args.namespace, args.key, value)
         if get_secret(args.namespace, args.key) != value:
@@ -69,7 +72,10 @@ def main(argv: list[str] | None = None) -> int:
         return 1
     except Exception:
         # Includes getpass fallback warnings and backend errors; never echo raw exceptions.
-        print("Credential operation failed. Check your terminal and unlocked OS keychain.", file=sys.stderr)
+        print(
+            "Credential operation failed. Check your terminal and unlocked OS keychain.",
+            file=sys.stderr,
+        )
         return 1
 
 
