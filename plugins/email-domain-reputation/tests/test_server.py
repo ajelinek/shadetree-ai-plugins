@@ -21,7 +21,7 @@ async def test_mcp_tools_never_accept_or_return_api_keys(monkeypatch):
         assert {tool.name for tool in tools} == {"check_setup", "investigate_email", "audit_domain"}
         for tool in tools:
             assert "api_key" not in json.dumps(tool.inputSchema)
-            assert tool.annotations.readOnlyHint is True
+            assert tool.annotations.read_only_hint is True
         report = (await client.call_tool("check_setup", {})).data
     assert report["ready"] is False
     assert "credentials set" in report["setup_command"]

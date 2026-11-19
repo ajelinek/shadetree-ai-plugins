@@ -11,6 +11,13 @@ Install `email-domain-reputation` from `ajelinek/shadetree-ai-plugins` in
 Claude Desktop's Plugins panel. The machine needs `uv` on PATH; Python and
 locked dependencies are managed by uv. No `dig` installation is needed.
 
+From Claude Code:
+
+```
+/plugin marketplace add ajelinek/shadetree-ai-plugins
+/plugin install email-domain-reputation@shadetree-ai-plugins
+```
+
 Ask Claude to run `check_setup` and show its setup command. Run that command
 yourself in a local terminal. It prompts for your Email Reputation API key
 twice without echoing, then saves and verifies it in the OS keychain.

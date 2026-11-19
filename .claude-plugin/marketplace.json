@@ -40,6 +40,11 @@
       "name": "audiobook-creator",
       "source": "./plugins/audiobook-creator",
       "description": "Turns a document's markdown text into a real, chaptered .m4b audiobook using local, offline neural TTS (Kokoro-82M) — no cloud API, no per-use cost, no text leaving the machine. Plain narration reads verbatim in one voice; Story mode rewrites dry source material into a themed narrative (noir, true-crime podcast, kids' bedtime story) with automatic narrator/character voice assignment. Chapter markers are embedded via FFMETADATA1, so it gets real chapter navigation, resume position, and speed controls in Apple Books, Podcasts, and Overcast. Synthesis runs as a polled background job. Requires ffmpeg on PATH; the ~120MB model downloads once on first use and is cached locally forever after."
+    },
+    {
+      "name": "email-domain-reputation",
+      "source": "./plugins/email-domain-reputation",
+      "description": "Investigate one email address with AbstractAPI reputation and live mail-DNS checks; get an evidence-led assessment and next steps. Local MCP server, OS-keychain credentials, and keyless domain audits."
     }
   ]
 }

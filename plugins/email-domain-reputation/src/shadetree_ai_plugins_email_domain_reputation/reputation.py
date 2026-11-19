@@ -107,13 +107,19 @@ def check_reputation(email: str, api_key: str) -> dict:
         exc.close()
         body = b""
     except (TimeoutError, urllib.error.URLError, OSError, ValueError):
-        return _failure("network_error", "AbstractAPI was unreachable or timed out; no retry was made.")
+        return _failure(
+            "network_error", "AbstractAPI was unreachable or timed out; no retry was made."
+        )
     if status == 401:
         return _failure("invalid_api_key", "AbstractAPI rejected the key. Use credentials replace.")
     if status in {403, 422}:
-        return _failure("quota_exhausted", "AbstractAPI credits or access are exhausted; check your plan.")
+        return _failure(
+            "quota_exhausted", "AbstractAPI credits or access are exhausted; check your plan."
+        )
     if status == 429:
-        return _failure("rate_limited", "AbstractAPI per-second rate limit hit; wait before trying again.")
+        return _failure(
+            "rate_limited", "AbstractAPI per-second rate limit hit; wait before trying again."
+        )
     if status != 200:
         return _failure("http_error", f"AbstractAPI returned HTTP {status}; no retry was made.")
     try:
@@ -129,5 +135,7 @@ def check_reputation(email: str, api_key: str) -> dict:
             raise ValueError("missing deliverability")
         signals = normalize_reputation(raw)
     except (ValueError, TypeError, UnicodeError, RecursionError):
-        return _failure("invalid_response", "AbstractAPI returned an unusable response; no assessment made.")
+        return _failure(
+            "invalid_response", "AbstractAPI returned an unusable response; no assessment made."
+        )
     return {"signals": signals, "source": {"ok": True, "error": None, "detail": None}}

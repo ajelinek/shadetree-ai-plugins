@@ -59,7 +59,9 @@ def validate_selectors(selectors: list[str] | None) -> list[str]:
             LABEL_RE.fullmatch(label) for label in selector.split(".")
         ) for selector in selectors
     )):
-        raise ValueError("Supply at most 20 DKIM selector names (DNS labels, at most 128 characters).")
+        raise ValueError(
+            "Supply at most 20 DKIM selector names (DNS labels, at most 128 characters)."
+        )
     return list(dict.fromkeys([*COMMON_DKIM_SELECTORS, *(selectors or [])]))
 
 
@@ -108,7 +110,8 @@ def parse_dmarc(records: list[str]) -> dict:
     record = records[0] if records else None
     tags, valid = _parse_tag_list(record or "")
     pct_text = tags.get("pct", "100")
-    pct = int(pct_text) if pct_text.isascii() and pct_text.isdigit() and len(pct_text) <= 3 else None
+    pct_ok = pct_text.isascii() and pct_text.isdigit() and len(pct_text) <= 3
+    pct = int(pct_text) if pct_ok else None
     policy = tags.get("p")
     valid = bool(records) and len(records) == 1 and valid and tags.get("v") == "DMARC1" and (
         policy in {"none", "quarantine", "reject"}
@@ -117,9 +120,11 @@ def parse_dmarc(records: list[str]) -> dict:
     }
     return {
         "found": bool(records), "record": record, "multiple_records": len(records) > 1,
-        "policy": policy, "subdomain_policy": tags.get("sp", policy), "pct": pct if records else None,
+        "policy": policy, "subdomain_policy": tags.get("sp", policy),
+        "pct": pct if records else None,
         "rua": [part.strip() for part in tags.get("rua", "").split(",") if part.strip()],
-        "record_valid": valid, "enforced": valid and policy in {"quarantine", "reject"} and pct == 100,
+        "record_valid": valid,
+        "enforced": valid and policy in {"quarantine", "reject"} and pct == 100,
         "inheritance_checked": False,
     }
 
@@ -134,7 +139,11 @@ def audit_dns(target: str, *, selectors: list[str] | None = None) -> dict:
     with ThreadPoolExecutor(max_workers=12) as pool:
         futures = {key: pool.submit(_query, *query) for key, query in queries.items()}
         results = {key: future.result() for key, future in futures.items()}
-    errors = {key: error for key, (_, error) in results.items() if error and not key.startswith("dkim:")}
+    errors = {
+        key: error
+        for key, (_, error) in results.items()
+        if error and not key.startswith("dkim:")
+    }
     mx_records = sorted(
         [{"preference": record.preference, "exchange": record.exchange.to_text().rstrip(".") or "."}
          for record in results["mx"][0]], key=lambda record: record["preference"]

@@ -35,15 +35,14 @@ shadetree-ai-plugins/
   CLAUDE.md                        # how this repo works — read this to add a new plugin
   .claude-plugin/marketplace.json  # the marketplace manifest
   packages/common/                 # shared helpers, vendored (not installed) into plugins
-  plugins/imessages/                # placeholder/test solution #1
-  plugins/iphone-history/           # placeholder/test solution #2
+  plugins/<name>/                  # one directory per solution
 ```
 
 ## Installing a plugin (for clients)
 
 In Claude Desktop: **Customize → Plugins → (+) → Add marketplace**,
-enter `ajelinek/shadetree-ai-plugins`, then install a plugin from the list (for
-now: `imessages` or `iphone-history`).
+enter `ajelinek/shadetree-ai-plugins`, then install a plugin from the list (the
+current list is in `.claude-plugin/marketplace.json`).
 
 The equivalent commands also work the same way in a Desktop or Cowork
 chat window, since both reach the same locally-running MCP server once
@@ -51,15 +50,15 @@ it's registered through Desktop:
 
 ```
 /plugin marketplace add ajelinek/shadetree-ai-plugins
-/plugin install imessages@shadetree-ai-plugins
+/plugin install iphone@shadetree-ai-plugins
 ```
 
 To update or remove a plugin later:
 
 ```
-/plugin update imessages@shadetree-ai-plugins
+/plugin update iphone@shadetree-ai-plugins
 /plugin marketplace update shadetree-ai-plugins
-/plugin uninstall imessages@shadetree-ai-plugins
+/plugin uninstall iphone@shadetree-ai-plugins
 ```
 
 **Prerequisite:** the machine running Claude Desktop needs
@@ -67,7 +66,7 @@ To update or remove a plugin later:
 installed and on `PATH`. `uv` fetches the right Python version itself,
 so no separate Python install is required.
 
-Each plugin's own README (e.g. `plugins/imessages/README.md`) has
+Each plugin's own README (e.g. `plugins/iphone/README.md`) has
 plugin-specific usage notes; this section covers the marketplace
 mechanics, which are identical for every plugin here.
 
@@ -78,8 +77,9 @@ with Claude's help. **`CLAUDE.md` documents the full pattern** (file
 layout, naming, the `packages/common` vendoring trick, registration,
 versioning); just ask Claude to add a new plugin (e.g. "add a plugin
 called `my-solution` that does X") and it will generate the files
-directly from that doc and `plugins/imessages`, which is a complete,
-tested, working reference implementation to copy the shape of.
+directly from that doc, copying an existing plugin's shape
+(`plugins/iphone` or `plugins/career-navigator` for server-backed,
+`plugins/grilling` for skills-only).
 
 ## Local development
 
@@ -113,10 +113,9 @@ internal/rapidly-iterating tool.
 
 ## Roadmap
 
-Next up: a real Microsoft 365/Graph-related solution, and turning
-`imessages`/`iphone-history` into actual data-reading plugins once the
-plumbing proven here (packaging, marketplace install, stdio connection,
-local filesystem access) is trusted. Nothing in this structure blocks a
+Next up: finishing the `skills-stash` migration (see
+`docs/plugin-authoring.md`) and a real Microsoft 365/Graph-related
+solution. Nothing in this structure blocks a
 future plugin from also mixing in a third-party/remote MCP server
 (e.g. an OAuth-authenticated Microsoft Graph endpoint) alongside its
 own local FastMCP server, in the same `.mcp.json`.
