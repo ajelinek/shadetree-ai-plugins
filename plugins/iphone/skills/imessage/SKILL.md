@@ -102,11 +102,13 @@ each returns structured data, not a JSON string to parse.
 
 Reports whether chat.db and the AddressBook are readable, the total message
 count, the local date range, and `trusted_contact_count` (see
-[Trusted contacts](#trusted-contacts)). If `chat_db_readable` is false, tell the
-user to grant **Full Disk Access** to the app running Claude (Claude Desktop, or
-the terminal/IDE running Claude Code), then try again — see
-[references/platform-issues.md](references/platform-issues.md) for a Claude-Code-
-specific gotcha where an app update silently revokes this grant. If `warnings`
+[Trusted contacts](#trusted-contacts)). If `chat_db_access` is `"denied"`, call
+`iphone_setup` and relay its `steps` to the user: it opens System Settings at
+Full Disk Access and shows the **Shadetree iPhone Bridge** app in Finder for
+them to drag in. Don't tell them to grant Full Disk Access to Claude.app, because
+that has no effect for Claude Desktop (see
+[references/platform-issues.md](references/platform-issues.md)). `"missing"`
+means chat.db doesn't exist (Messages never set up on this Mac). If `warnings`
 mentions a shallow history window, this Mac's local history may be incomplete —
 see [references/platform-issues.md](references/platform-issues.md) for the
 iCloud sync explanation before assuming the data doesn't exist. `imessage_doctor`
@@ -155,9 +157,9 @@ instead) or ask the user to disambiguate, then retry with an exact `chat_guid`.
 Every message caps at 10,000 characters (`imessage_send` raises rather than
 silently splitting long text — split it into multiple calls yourself if needed).
 The first send in a session triggers a separate macOS **Automation** permission
-prompt ("... wants to control Messages") distinct from the Full Disk Access
-`imessage_doctor` checks — if it fails, check System Settings -> Privacy &
-Security -> Automation. This tool never writes to chat.db; sending only ever
+prompt ("Shadetree iPhone Bridge wants to control Messages") distinct from the
+Full Disk Access `imessage_doctor` checks. If it fails, check System Settings ->
+Privacy & Security -> Automation -> Shadetree iPhone Bridge -> Messages. This tool never writes to chat.db; sending only ever
 goes through `osascript` talking to Messages.app.
 
 ## Attachments

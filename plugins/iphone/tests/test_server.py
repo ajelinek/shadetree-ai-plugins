@@ -18,6 +18,7 @@ from pathlib import Path
 import pytest
 from fastmcp import Client
 from shadetree_ai_plugins_iphone import server as srv
+from shadetree_ai_plugins_iphone import tcc
 
 APPLE_EPOCH_OFFSET = srv.APPLE_EPOCH_OFFSET
 
@@ -642,3 +643,98 @@ def test_server_has_no_network_calls():
         r"^\s*(import|from)\s+(requests|socket|urllib\d*|http\.client|httplib)\b", re.MULTILINE
     )
     assert not banned_imports.search(source), "found a banned network-related import"
+
+
+# --------------------------------------------------------------------------------
+# Full Disk Access diagnostics, iphone_setup, and the bundled bridge app
+# --------------------------------------------------------------------------------
+
+PLUGIN_ROOT = Path(__file__).resolve().parent.parent
+
+
+def test_classify_access_distinguishes_missing_denied_readable(tmp_path):
+    readable = tmp_path / "ok.db"
+    readable.write_bytes(b"x")
+    denied = tmp_path / "denied.db"
+    denied.write_bytes(b"x")
+    denied.chmod(0)
+    try:
+        assert tcc.classify_access(str(readable)) == "readable"
+        assert tcc.classify_access(str(tmp_path / "nope.db")) == "missing"
+        if os.geteuid() != 0:  # root ignores file modes
+            assert tcc.classify_access(str(denied)) == "denied"
+    finally:
+        denied.chmod(0o600)
+
+
+def test_grant_target_prefers_enclosing_app_bundle():
+    cmux = "/Applications/cmux.app"
+    assert tcc.grant_target(f"{cmux}/Contents/MacOS/cmux") == cmux
+    assert tcc.grant_target("/opt/homebrew/bin/uv") == "/opt/homebrew/bin/uv"
+    assert tcc.grant_target(None) is None
+
+
+def test_denied_open_raises_full_disk_access_guidance(fixtures, monkeypatch):
+    monkeypatch.setattr(srv, "classify_access", lambda _path: "denied")
+    monkeypatch.setattr(
+        tcc, "responsible_binary",
+        lambda: f"/x/bin/{tcc.BRIDGE_APP_NAME}/Contents/MacOS/shadetree-iphone-bridge",
+    )
+    chat_db = Path(os.environ["SHADETREE_AI_PLUGINS_IPHONE_CHAT_DB_PATH"])
+    chat_db.chmod(0)
+    try:
+        with pytest.raises(srv.DbUnavailable) as exc_info:
+            srv.open_chat_db()
+    finally:
+        chat_db.chmod(0o600)
+    message = str(exc_info.value)
+    assert "Shadetree iPhone Bridge" in message
+    assert "iphone_setup" in message
+    assert "Claude.app does NOT work" in message
+
+
+async def test_doctors_report_access_status(fixtures):
+    async with Client(srv.mcp) as client:
+        im = (await client.call_tool("imessage_doctor", {})).data
+        calls = (await client.call_tool("calls_doctor", {})).data
+    assert im["chat_db_access"] == "readable"
+    assert im["address_book_access"] == "readable"
+    assert calls["call_history_db_access"] == "readable"
+    assert set(im["full_disk_access"]) == {"checked_against", "grant_to", "via_bridge"}
+
+
+async def test_iphone_setup_does_nothing_when_access_works(fixtures, monkeypatch):
+    calls = []
+    monkeypatch.setattr(srv.subprocess, "run", lambda *a, **k: calls.append(a))
+    async with Client(srv.mcp) as client:
+        r = (await client.call_tool("iphone_setup", {})).data
+    assert r["needed"] is False
+    assert calls == []
+
+
+async def test_iphone_setup_opens_settings_and_reveals_bridge(fixtures, monkeypatch):
+    bridge = f"/x/bin/{tcc.BRIDGE_APP_NAME}"
+    monkeypatch.setattr(srv, "classify_access", lambda _path: "denied")
+    monkeypatch.setattr(
+        tcc, "responsible_binary", lambda: f"{bridge}/Contents/MacOS/shadetree-iphone-bridge"
+    )
+    calls = []
+    monkeypatch.setattr(srv.subprocess, "run", lambda args, **k: calls.append(args))
+    async with Client(srv.mcp) as client:
+        r = (await client.call_tool("iphone_setup", {})).data
+    assert r["needed"] is True
+    assert r["full_disk_access"]["via_bridge"] is True
+    assert calls == [["open", tcc.FDA_SETTINGS_URL], ["open", "-R", bridge]]
+    assert any("Shadetree iPhone Bridge" in step for step in r["steps"])
+
+
+def test_mcp_json_launches_the_committed_bridge():
+    import json
+
+    server = json.loads((PLUGIN_ROOT / ".mcp.json").read_text())["mcpServers"]["iphone"]
+    exe_arg = server["args"][-1]
+    assert exe_arg.startswith("${CLAUDE_PLUGIN_ROOT}/")
+    exe = PLUGIN_ROOT / exe_arg.removeprefix("${CLAUDE_PLUGIN_ROOT}/")
+    assert exe.is_file(), f"bridge not built/committed: run bridge/build.sh ({exe})"
+    assert exe.read_bytes()[:4] == bytes.fromhex("cafebabe"), "bridge should be a universal Mach-O"
+    assert exe.parent.parent.parent == tcc.bridge_app_path()

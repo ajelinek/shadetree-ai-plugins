@@ -46,10 +46,10 @@ returns structured data, not a JSON string to parse.
 
 Reports whether CallHistory.storedata and the AddressBook are readable, the total
 call count, the local date range, and how many of those calls were real cellular
-phone calls (as opposed to FaceTime). If `call_history_db_readable` is false, tell
-the user to grant **Full Disk Access** to the app running Claude (Claude Desktop,
-or the terminal/IDE running Claude Code), then try again — this is the same grant
-the `imessage` skill needs, not a separate one; see
+phone calls (as opposed to FaceTime). If `call_history_db_access` is `"denied"`,
+call `iphone_setup` and relay its `steps` to the user (they drag the **Shadetree
+iPhone Bridge** app into Full Disk Access). It's the same grant the `imessage`
+skill needs, not a separate one, and granting it to Claude.app has no effect; see
 [references/platform-issues.md](references/platform-issues.md). If `warnings`
 flags zero phone calls or a shallow date range, see "Continuity Calling" below
 before assuming the data doesn't exist — this is the single most common surprise

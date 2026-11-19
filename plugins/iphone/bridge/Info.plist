@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleIdentifier</key>
+	<string>io.github.ajelinek.shadetree-ai-plugins.iphone-bridge</string>
+	<key>CFBundleName</key>
+	<string>Shadetree iPhone Bridge</string>
+	<key>CFBundleDisplayName</key>
+	<string>Shadetree iPhone Bridge</string>
+	<key>CFBundleExecutable</key>
+	<string>shadetree-iphone-bridge</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleShortVersionString</key>
+	<string>1.0.0</string>
+	<key>CFBundleVersion</key>
+	<string>1</string>
+	<key>LSMinimumSystemVersion</key>
+	<string>12.0</string>
+	<key>LSBackgroundOnly</key>
+	<true/>
+	<key>NSHumanReadableCopyright</key>
+	<string>Launcher for the shadetree-ai-plugins iphone MCP server. Grant it Full Disk Access.</string>
+</dict>
+</plist>

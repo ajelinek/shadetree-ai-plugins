@@ -2,21 +2,17 @@
 
 ## Full Disk Access (TCC)
 
-`CallHistory.storedata` is protected by macOS's TCC (Transparency, Consent, and
-Control) system, the same bucket that gates the `imessage` skill's `chat.db` and the
-AddressBook:
+`CallHistory.storedata` is protected by the same TCC Full Disk Access check as
+the `imessage` skill's `chat.db` and the AddressBook, and it's covered by the same
+single grant: Full Disk Access for **Shadetree iPhone Bridge**, the launcher
+bundled at `bin/Shadetree iPhone Bridge.app`. Granting it to Claude.app has no
+effect for Claude Desktop.
 
-System Settings -> Privacy & Security -> Full Disk Access -> add the app running
-Claude -> restart the app.
-
-Without it, `sqlite3.connect(..., uri=True)` in read-only mode raises
-`sqlite3.OperationalError` (typically `unable to open database file` or
-`authorization denied`). `server.py`'s `open_calls_db()` catches this and raises a
-clear error pointing at the fix; `calls_doctor` surfaces it as
-`call_history_db_readable: false`. If Full Disk Access is already granted for the
-`imessage` skill's tools, this skill is covered too — it's the same grant, not a
-separate one. See the `imessage` skill's own `references/platform-issues.md` for a
-Claude-Code-specific gotcha where an app update can silently revoke this grant.
+`calls_doctor` reports `call_history_db_access` (`readable` / `denied` /
+`missing` / `error`) and `full_disk_access.grant_to`. When it's `denied`,
+`iphone_setup` opens the right System Settings page and reveals the app to drag
+in. See the `imessage` skill's `references/platform-issues.md` for why the grant
+belongs to the bridge, how the bridge works, and when a grant has to be redone.
 
 ## AddressBook access
 

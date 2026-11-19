@@ -1,15 +1,11 @@
 {
   "mcpServers": {
     "iphone": {
-      "command": "uv",
+      "command": "/bin/sh",
       "args": [
-        "run",
-        "--project",
-        "${CLAUDE_PLUGIN_ROOT}",
-        "--locked",
-        "python",
-        "-m",
-        "shadetree_ai_plugins_iphone"
+        "-c",
+        "chmod +x \"$0\" 2>/dev/null; exec \"$0\"",
+        "${CLAUDE_PLUGIN_ROOT}/bin/Shadetree iPhone Bridge.app/Contents/MacOS/shadetree-iphone-bridge"
       ]
     }
   }

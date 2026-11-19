@@ -46,6 +46,14 @@ from .contacts import (
     resolve_handle_to_name,
 )
 from .dates import APPLE_EPOCH_OFFSET, iso, parse_when, until_boundary
+from .tcc import (
+    BRIDGE_APP_NAME,
+    FDA_SETTINGS_URL,
+    bridge_app_path,
+    classify_access,
+    denied_message,
+    fda_report,
+)
 
 logger = get_logger("shadetree-ai-plugins-iphone")
 
@@ -124,14 +132,9 @@ def _open_readonly_db(db_path: str, probe_sql: str) -> sqlite3.Connection:
             last_exc = exc
             if "locked" not in str(exc).lower() and "busy" not in str(exc).lower():
                 break
-    raise DbUnavailable(
-        f"Cannot read {db_path}: {last_exc}. Grant Full Disk Access to the app running this "
-        f"MCP server (Claude Desktop, or the terminal/IDE running Claude Code) -- System "
-        f"Settings -> Privacy & Security -> Full Disk Access. If Full Disk Access was already "
-        f"granted and this just started failing after a Claude update, macOS may have silently "
-        f"revoked it: Claude Code's embedded CLI binary path changes with each version, so "
-        f"re-add the exact current binary under Full Disk Access after updating."
-    ) from last_exc
+    if classify_access(db_path) == "denied":
+        raise DbUnavailable(denied_message(db_path)) from last_exc
+    raise DbUnavailable(f"Cannot read {db_path}: {last_exc}.") from last_exc
 
 
 def open_chat_db() -> sqlite3.Connection:
@@ -483,6 +486,66 @@ _SEND_ANNOTATIONS = {
 
 
 # --------------------------------------------------------------------------------
+# Setup (Full Disk Access)
+# --------------------------------------------------------------------------------
+
+_SETUP_ANNOTATIONS = {
+    "readOnlyHint": False,  # opens System Settings and a Finder window
+    "destructiveHint": False,
+    "idempotentHint": True,
+    "openWorldHint": False,
+}
+
+
+@mcp.tool(annotations=_SETUP_ANNOTATIONS)
+def iphone_setup() -> dict:
+    """Walk the user through granting Full Disk Access when a doctor reports
+    access 'denied'. Opens System Settings at Privacy & Security -> Full Disk
+    Access and reveals the app to grant in Finder. Relay the returned steps to
+    the user verbatim; they must do the drag-and-toggle themselves (macOS has no
+    way to grant it programmatically). Does nothing if access already works."""
+    databases = {
+        "chat_db": chat_db_path(),
+        "call_history_db": callhistory_db_path(),
+        "address_book": address_book_sources_dir(),
+    }
+    access = {name: classify_access(path) for name, path in databases.items()}
+    report = fda_report()
+    result: dict[str, Any] = {"access": access, "full_disk_access": report, "opened": []}
+
+    if "denied" not in access.values():
+        result["needed"] = False
+        result["steps"] = ["Nothing to do: macOS isn't blocking any of the databases."]
+        return result
+
+    result["needed"] = True
+    target = report["grant_to"] or str(bridge_app_path())
+    app_label = BRIDGE_APP_NAME[:-4] if report["via_bridge"] else Path(target).name
+    for args in (["open", FDA_SETTINGS_URL], ["open", "-R", target]):
+        try:
+            subprocess.run(args, check=True, capture_output=True, timeout=10)
+            result["opened"].append(args[-1])
+        except (OSError, subprocess.SubprocessError) as exc:
+            logger.warning("iphone_setup: %s failed: %s", args, exc)
+
+    result["steps"] = [
+        "System Settings is open at Privacy & Security -> Full Disk Access, and a Finder "
+        f'window shows "{app_label}" selected.',
+        f'Drag "{app_label}" from Finder into the Full Disk Access list (or click +, press '
+        f"Cmd+Shift+G, and paste: {target}).",
+        "Make sure its switch is on. macOS may ask for your password.",
+        "Quit Claude completely (Cmd+Q) and reopen it, then run the doctor again.",
+    ]
+    if not report["via_bridge"]:
+        result["steps"].append(
+            "Note: this server is not running through the bundled bridge app, so macOS is "
+            f"checking {target} instead. That is expected for a development launch from a "
+            "terminal."
+        )
+    return result
+
+
+# --------------------------------------------------------------------------------
 # imessage_* tools
 # --------------------------------------------------------------------------------
 
@@ -490,17 +553,21 @@ _SEND_ANNOTATIONS = {
 def imessage_doctor() -> dict:
     """Preflight check for iMessage: chat.db/AddressBook access, message count,
     local date range, and trusted-contact count. Call this first in a session
-    before any other imessage_* tool."""
+    before any other imessage_* tool. If chat_db_access is 'denied', call
+    iphone_setup to walk the user through granting Full Disk Access."""
     db_path = chat_db_path()
     result: dict[str, Any] = {
         "chat_db_path": db_path,
         "chat_db_exists": os.path.exists(db_path),
         "chat_db_readable": False,
+        "chat_db_access": classify_access(db_path),
         "message_count": None,
         "earliest_message_date": None,
         "latest_message_date": None,
         "address_book_dir": address_book_sources_dir(),
         "address_book_found": False,
+        "address_book_access": classify_access(address_book_sources_dir()),
+        "full_disk_access": fda_report(),
         "contact_count": 0,
         "trusted_contact_count": 0,
         "warnings": [],
@@ -551,10 +618,15 @@ def imessage_doctor() -> dict:
                 )
         except Exception as exc:  # pragma: no cover - defensive
             result["errors"].append(f"Failed to read AddressBook: {exc}")
+    elif result["address_book_access"] == "denied":
+        result["warnings"].append(
+            "Contacts (AddressBook) access denied by macOS, so names won't resolve, only raw "
+            "handles. The same Full Disk Access grant that unlocks the database fixes this."
+        )
     else:
         result["warnings"].append(
             "No AddressBook database found — contact names won't resolve, only raw handles. "
-            "This is optional; grant Full Disk Access if you want name resolution."
+            "This is optional: Contacts may simply be empty or not synced to this Mac."
         )
 
     trusted_contacts = load_trusted_contacts()
@@ -1282,18 +1354,23 @@ def calls_doctor() -> dict:
     """Preflight check for call history: CallHistory.storedata/AddressBook access,
     call count, local date range, and whether any real cellular calls are present.
     Call this first before calls_list — a zero phone_call_count with call_count > 0
-    almost always means Continuity Calling ('Calls From iPhone') is off, not a bug."""
+    almost always means Continuity Calling ('Calls From iPhone') is off, not a bug.
+    If call_history_db_access is 'denied', call iphone_setup to walk the user through
+    granting Full Disk Access."""
     db_path = callhistory_db_path()
     result: dict[str, Any] = {
         "call_history_db_path": db_path,
         "call_history_db_exists": os.path.exists(db_path),
         "call_history_db_readable": False,
+        "call_history_db_access": classify_access(db_path),
         "call_count": None,
         "phone_call_count": 0,
         "earliest_call_date": None,
         "latest_call_date": None,
         "address_book_dir": address_book_sources_dir(),
         "address_book_found": False,
+        "address_book_access": classify_access(address_book_sources_dir()),
+        "full_disk_access": fda_report(),
         "contact_count": 0,
         "warnings": [],
         "errors": [],
@@ -1356,10 +1433,15 @@ def calls_doctor() -> dict:
                 )
         except Exception as exc:  # pragma: no cover - defensive
             result["errors"].append(f"Failed to read AddressBook: {exc}")
+    elif result["address_book_access"] == "denied":
+        result["warnings"].append(
+            "Contacts (AddressBook) access denied by macOS, so names won't resolve, only raw "
+            "handles. The same Full Disk Access grant that unlocks the database fixes this."
+        )
     else:
         result["warnings"].append(
             "No AddressBook database found — contact names won't resolve, only raw numbers/emails. "
-            "This is optional; grant Full Disk Access if you want name resolution."
+            "This is optional: Contacts may simply be empty or not synced to this Mac."
         )
 
     result["ok"] = result["call_history_db_readable"] and result["call_count"] not in (None, 0)

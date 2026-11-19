@@ -2,26 +2,67 @@
 
 ## Full Disk Access (TCC)
 
-`chat.db` is protected by macOS's TCC (Transparency, Consent, and Control) system.
-The app actually running the MCP server — Claude Desktop, or the terminal/IDE
-running Claude Code — needs **Full Disk Access**:
+`chat.db`, `CallHistory.storedata`, and the AddressBook are protected by macOS's
+TCC (Transparency, Consent, and Control) system. Reading them needs **Full Disk
+Access**, and the app that must hold it is **Shadetree iPhone Bridge**, bundled
+with this plugin at `bin/Shadetree iPhone Bridge.app`. It is not Claude.app.
 
-System Settings -> Privacy & Security -> Full Disk Access -> add that app -> restart
-the app.
+### Why not Claude.app
 
-Without it, `sqlite3.connect(..., uri=True)` in read-only mode raises
-`sqlite3.OperationalError` (typically `unable to open database file` or
-`authorization denied`). `server.py`'s `open_chat_db()` catches this and raises a
-clear error pointing at the fix; `imessage_doctor` surfaces it as
-`chat_db_readable: false`.
+TCC checks Full Disk Access against the *responsible* process, not the process
+that opens the file. Claude Desktop starts MCP servers through
+`Claude.app/Contents/Helpers/disclaimer`, which makes the server's first binary
+its own responsible process, cut off from Claude.app's grants. Before 0.2.0
+that binary was `uv`, so TCC checked a version-specific path like
+`/opt/homebrew/Cellar/uv/0.11.14/bin/uv`. Granting FDA to Claude.app did nothing,
+and granting it to uv broke on the next `brew upgrade uv` and handed FDA to
+every uv-run script. (Verified from tccd's `AUTHREQ_ATTRIBUTION` log lines:
+`log show --predicate 'subsystem == "com.apple.TCC"'`.)
 
-**Claude Code specific gotcha**: granting Full Disk Access to `Claude.app` does
-not necessarily cover its embedded CLI binary, and because that binary's path is
-version-specific, a Claude Code update can silently invalidate a previously-working
-Full Disk Access grant — `imessage_doctor` will suddenly start reporting
-`chat_db_readable: false` again with no other change on the user's part. If reads
-that used to work stop working right after an update, re-add the exact current
-binary path under Full Disk Access rather than assuming the grant is gone for good.
+### The bridge
+
+`.mcp.json` launches the bridge (source: `bridge/iphone_bridge.c`), which:
+
+- re-spawns itself with responsibility disclaimed if something else is
+  responsible (a terminal or IDE), so TCC always checks the bridge, whatever
+  launched it, and users get one instruction;
+- spawns `uv run --project <plugin root> --locked python -m
+  shadetree_ai_plugins_iphone` and stays alive as its parent (spawn, not exec:
+  after an exec TCC would check uv again);
+- ignores all arguments and strips `DYLD_*`, `PYTHON*`, `UV_*`, `VIRTUAL_ENV`,
+  and `CONDA_*` from the environment, so other local programs can't use the
+  FDA-holding bridge to run their own code. A program running as the same user
+  can still edit the plugin's files, so this narrows misuse rather than ruling
+  it out, the same as granting FDA to a terminal.
+
+`/bin/sh` wraps the launch only to re-apply the executable bit in case an
+installer drops it; it `exec`s the bridge, so it never becomes responsible
+itself.
+
+### Diagnosing
+
+Both doctors report `chat_db_access` / `call_history_db_access` /
+`address_book_access` as `readable`, `denied` (TCC or file permissions),
+`missing`, or `error`, plus `full_disk_access`:
+
+- `checked_against`: the binary TCC actually checks (looked up with
+  `responsibility_get_pid_responsible_for_pid`);
+- `grant_to`: its enclosing `.app`, which is what to add in System Settings;
+- `via_bridge`: whether that's the bridge.
+
+When anything is `denied`, `iphone_setup` opens System Settings -> Privacy &
+Security -> Full Disk Access and reveals `grant_to` in Finder. The user drags it
+in, turns it on, then quits and reopens Claude.
+
+### When a grant stops working
+
+The bridge is ad-hoc signed, so TCC ties the grant to this exact binary. A
+plugin release that rebuilds the bridge (rare, noted in CHANGELOG) needs the
+grant redone: remove the old entry and add the new app. Plugin updates that
+don't touch the bridge keep the same binary. Whether a grant survives the
+plugin moving to a new install directory is still being verified; if a doctor
+says `denied` right after an update, re-add the app from its new location
+(`grant_to`).
 
 ## Transient "database is locked" errors
 
@@ -46,12 +87,12 @@ nice-to-have, not a hard requirement to use these tools.
 Messages.app to deliver the text via AppleScript's `tell application "Messages" to
 send`. macOS gates this separately from Full Disk Access: the first `imessage_send`
 call in a session (or after an OS update) triggers an **Automation** permission
-prompt for whatever app is running the MCP server ("Terminal wants to control
-Messages.app" or similar). If the user dismissed or never saw that prompt,
+prompt for the responsible process, which is the bridge ("Shadetree iPhone
+Bridge wants to control Messages"). If the user dismissed or never saw that prompt,
 `osascript` exits nonzero and `send_via_applescript()` raises with the fix pointer:
 
-System Settings -> Privacy & Security -> Automation -> find the app running the MCP
-server -> enable Messages.
+System Settings -> Privacy & Security -> Automation -> Shadetree iPhone Bridge ->
+enable Messages.
 
 A denied/missing grant here does not affect `imessage_doctor` or any read tool —
 Full Disk Access and Automation are independent TCC checks.
