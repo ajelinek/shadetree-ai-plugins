@@ -3,7 +3,7 @@
 macOS checks Full Disk Access against the *responsible* process, not the process
 that opens the file. Claude Desktop starts MCP servers through a helper that
 makes the server's first binary responsible, so FDA on Claude.app does not
-apply. `.mcp.json` therefore launches the bundled "Shadetree iPhone Bridge.app"
+apply. `.mcp.json` therefore launches the bundled "bridge/Shadetree iPhone Bridge.app"
 (see bridge/iphone_bridge.c), which always makes itself responsible, so users
 grant FDA to that one app. Under a dev launch (`uv run` from a terminal) the
 responsible process is the terminal instead; `responsible_binary()` reports
@@ -26,7 +26,7 @@ _DENIED_ERRNOS = {errno.EPERM, errno.EACCES}
 
 def bridge_app_path() -> Path:
     # src/shadetree_ai_plugins_iphone/tcc.py -> plugin root is three levels up.
-    return Path(__file__).resolve().parents[2] / "bin" / BRIDGE_APP_NAME
+    return Path(__file__).resolve().parents[2] / "bridge" / BRIDGE_APP_NAME
 
 
 def responsible_binary() -> str | None:

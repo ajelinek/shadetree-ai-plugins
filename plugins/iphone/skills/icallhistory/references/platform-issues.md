@@ -5,7 +5,7 @@
 `CallHistory.storedata` is protected by the same TCC Full Disk Access check as
 the `imessage` skill's `chat.db` and the AddressBook, and it's covered by the same
 single grant: Full Disk Access for **Shadetree iPhone Bridge**, the launcher
-bundled at `bin/Shadetree iPhone Bridge.app`. Granting it to Claude.app has no
+bundled at `bridge/Shadetree iPhone Bridge.app`. Granting it to Claude.app has no
 effect for Claude Desktop.
 
 `calls_doctor` reports `call_history_db_access` (`readable` / `denied` /

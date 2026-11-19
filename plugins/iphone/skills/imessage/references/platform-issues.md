@@ -5,7 +5,7 @@
 `chat.db`, `CallHistory.storedata`, and the AddressBook are protected by macOS's
 TCC (Transparency, Consent, and Control) system. Reading them needs **Full Disk
 Access**, and the app that must hold it is **Shadetree iPhone Bridge**, bundled
-with this plugin at `bin/Shadetree iPhone Bridge.app`. It is not Claude.app.
+with this plugin at `bridge/Shadetree iPhone Bridge.app`. It is not Claude.app.
 
 ### Why not Claude.app
 

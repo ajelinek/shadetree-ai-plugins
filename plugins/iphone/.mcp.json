@@ -5,7 +5,7 @@
       "args": [
         "-c",
         "chmod +x \"$0\" 2>/dev/null; exec \"$0\"",
-        "${CLAUDE_PLUGIN_ROOT}/bin/Shadetree iPhone Bridge.app/Contents/MacOS/shadetree-iphone-bridge"
+        "${CLAUDE_PLUGIN_ROOT}/bridge/Shadetree iPhone Bridge.app/Contents/MacOS/shadetree-iphone-bridge"
       ]
     }
   }

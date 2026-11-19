@@ -43,9 +43,10 @@ The first `imessage_send` also asks once for permission to control Messages.
 
 - `.claude-plugin/plugin.json` / `.mcp.json` — plugin + MCP server manifest
   (one server, `shadetree_ai_plugins_iphone`, launched through the bridge).
-- `bin/Shadetree iPhone Bridge.app` — prebuilt, committed launcher that holds the
-  Full Disk Access grant. Source and build script in `bridge/`
-  (`bridge/build.sh`); rebuild only when it has to change, because a rebuilt
+- `bridge/Shadetree iPhone Bridge.app` — prebuilt, committed launcher that holds
+  the Full Disk Access grant, next to its source and `bridge/build.sh`. It can't
+  live in a top-level `bin/`: claude.ai-hosted marketplaces reject that. Rebuild
+  only when it has to change, because a rebuilt
   ad-hoc-signed bridge makes users grant Full Disk Access again.
 - `fastmcp.json` — local dev only (`fastmcp run fastmcp.json`), not used by the
   installed plugin.

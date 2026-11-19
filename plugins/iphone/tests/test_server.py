@@ -678,7 +678,7 @@ def test_denied_open_raises_full_disk_access_guidance(fixtures, monkeypatch):
     monkeypatch.setattr(srv, "classify_access", lambda _path: "denied")
     monkeypatch.setattr(
         tcc, "responsible_binary",
-        lambda: f"/x/bin/{tcc.BRIDGE_APP_NAME}/Contents/MacOS/shadetree-iphone-bridge",
+        lambda: f"/x/bridge/{tcc.BRIDGE_APP_NAME}/Contents/MacOS/shadetree-iphone-bridge",
     )
     chat_db = Path(os.environ["SHADETREE_AI_PLUGINS_IPHONE_CHAT_DB_PATH"])
     chat_db.chmod(0)
@@ -713,7 +713,7 @@ async def test_iphone_setup_does_nothing_when_access_works(fixtures, monkeypatch
 
 
 async def test_iphone_setup_opens_settings_and_reveals_bridge(fixtures, monkeypatch):
-    bridge = f"/x/bin/{tcc.BRIDGE_APP_NAME}"
+    bridge = f"/x/bridge/{tcc.BRIDGE_APP_NAME}"
     monkeypatch.setattr(srv, "classify_access", lambda _path: "denied")
     monkeypatch.setattr(
         tcc, "responsible_binary", lambda: f"{bridge}/Contents/MacOS/shadetree-iphone-bridge"

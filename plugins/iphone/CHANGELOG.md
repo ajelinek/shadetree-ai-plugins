@@ -1,11 +1,17 @@
 # Changelog
 
+## 0.2.1 -- 2026-11-19
+
+- Move the bridge app from `bin/` to `bridge/Shadetree iPhone Bridge.app`.
+  claude.ai-hosted marketplaces reject plugins with a top-level `bin/`, so
+  0.2.0 never reached users. Same behavior as 0.2.0 otherwise.
+
 ## 0.2.0 -- 2026-11-19
 
 - Fix Full Disk Access never working in Claude Desktop. Desktop starts MCP
   servers through a helper that makes the server's first binary (`uv`) the
   process macOS checks, so FDA on Claude.app was ignored. `.mcp.json` now
-  launches a bundled launcher, `bin/Shadetree iPhone Bridge.app`, which always
+  launches a bundled launcher, `bridge/Shadetree iPhone Bridge.app`, which always
   makes itself the process macOS checks. Grant Full Disk Access to it once.
 - Add `iphone_setup`: opens System Settings at Full Disk Access and shows the
   bridge in Finder to drag in.

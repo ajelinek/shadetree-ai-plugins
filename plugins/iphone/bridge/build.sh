@@ -1,5 +1,6 @@
 #!/bin/sh
-# Build bin/Shadetree iPhone Bridge.app (universal arm64 + x86_64) from bridge/.
+# Build bridge/Shadetree iPhone Bridge.app (universal arm64 + x86_64) from this folder.
+# Not bin/: claude.ai-hosted marketplaces reject a top-level bin/ (it is added to PATH).
 #
 # The built bundle is committed: plugin installs copy files and never run a build.
 #
@@ -14,7 +15,7 @@
 set -eu
 
 here=$(cd "$(dirname "$0")" && pwd)
-app="$here/../bin/Shadetree iPhone Bridge.app"
+app="$here/Shadetree iPhone Bridge.app"
 exe_name=shadetree-iphone-bridge
 bundle_id=io.github.ajelinek.shadetree-ai-plugins.iphone-bridge
 

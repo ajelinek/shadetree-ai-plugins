@@ -25,7 +25,7 @@
  * VIRTUAL_ENV, CONDA_*).
  *
  * Build: bridge/build.sh (universal arm64 + x86_64). The built bundle is
- * committed under bin/ because plugin installs copy files and never run a
+ * committed in bridge/ because plugin installs copy files and never run a
  * build step.
  */
 
@@ -133,7 +133,9 @@ static int find_uv(char *out, size_t out_len) {
     return 0;
 }
 
-/* <root>/bin/<Bridge>.app/Contents/MacOS/<exe>: five dirname() steps up. */
+/* <root>/bridge/<Bridge>.app/Contents/MacOS/<exe>: five dirname() steps up.
+ * Not bin/: claude.ai-hosted marketplaces reject a top-level bin/ (it is added
+ * to PATH). */
 static int plugin_root(const char *exe, char *out, size_t out_len) {
     char buf[PATH_MAX];
     snprintf(buf, sizeof buf, "%s", exe);
@@ -185,7 +187,7 @@ int main(void) {
     char root[PATH_MAX];
     if (!plugin_root(exe, root, sizeof root)) {
         fprintf(stderr,
-                BRIDGE ": %s is not inside the iphone plugin (expected <plugin>/bin/<app>)\n", exe);
+                BRIDGE ": %s is not inside the iphone plugin (expected <plugin>/bridge/<app>)\n", exe);
         return 1;
     }
 
