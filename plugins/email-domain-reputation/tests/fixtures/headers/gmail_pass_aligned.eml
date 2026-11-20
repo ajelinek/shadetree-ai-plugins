@@ -1,0 +1,40 @@
+Delivered-To: auditor.inbox@gmail.example
+Received: by 2002:a05:6a10:1234:b0:5f1:abcd:ef01 with SMTP id x12csp123456pxb;
+        Tue, 17 Nov 2026 10:15:03 -0800 (PST)
+X-Received: by 2002:a05:620a:1a2b:b0:7b1:2345:6789 with SMTP id a1mr1234567qkb.12.1763403303000;
+        Tue, 17 Nov 2026 10:15:03 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; t=1763403303; cv=none;
+        d=google.com; s=arc-20240605;
+        b=AbCdEfGh
+ARC-Authentication-Results: i=1; mx.google.com;
+       dkim=pass header.i=@clientco.example header.s=s1 header.b=AbCd1234;
+       spf=pass (google.com: domain of alice@clientco.example designates 203.0.113.25 as permitted sender) smtp.mailfrom=alice@clientco.example;
+       dmarc=pass (p=REJECT sp=REJECT dis=NONE) header.from=clientco.example
+Return-Path: <alice@clientco.example>
+Received: from mail.clientco.example (mail.clientco.example. [203.0.113.25])
+        by mx.google.com with ESMTPS id a1si123456qkb.200.2026.11.17.10.15.02
+        for <auditor.inbox@gmail.example>
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 17 Nov 2026 10:15:02 -0800 (PST)
+Received-SPF: pass (google.com: domain of alice@clientco.example designates 203.0.113.25 as permitted sender) client-ip=203.0.113.25;
+Authentication-Results: mx.google.com;
+       dkim=pass header.i=@clientco.example header.s=s1 header.b=AbCd1234;
+       spf=pass (google.com: domain of alice@clientco.example designates 203.0.113.25 as permitted sender) smtp.mailfrom=alice@clientco.example;
+       dmarc=pass (p=REJECT sp=REJECT dis=NONE) header.from=clientco.example
+Received: from workstation.clientco.example ([10.20.0.15])
+        by mail.clientco.example (Postfix) with ESMTPSA id 4Xyz12;
+        Tue, 17 Nov 2026 18:15:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=clientco.example;
+        s=s1; t=1763403301;
+        h=from:to:subject:date:message-id:mime-version;
+        bh=47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=;
+        b=QmFzZTY0U2lnbmF0dXJl
+From: Alice Example <alice@clientco.example>
+To: auditor.inbox@gmail.example
+Subject: Deliverability test
+Date: Tue, 17 Nov 2026 18:15:01 +0000
+Message-ID: <a1b2c3d4@mail.clientco.example>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
+
+SECRET-BODY-MARKER this is the message body.

@@ -6,6 +6,7 @@ response, breach-domain list, retries, or query-string credentials.
 
 from __future__ import annotations
 
+import http.client
 import json
 import math
 import urllib.error
@@ -106,7 +107,7 @@ def check_reputation(email: str, api_key: str) -> dict:
         status = exc.code
         exc.close()
         body = b""
-    except (TimeoutError, urllib.error.URLError, OSError, ValueError):
+    except (TimeoutError, urllib.error.URLError, http.client.HTTPException, OSError, ValueError):
         return _failure(
             "network_error", "AbstractAPI was unreachable or timed out; no retry was made."
         )

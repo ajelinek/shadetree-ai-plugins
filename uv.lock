@@ -1387,7 +1387,7 @@ requires-dist = [{ name = "keyring", specifier = ">=25.5.0" }]
 
 [[package]]
 name = "shadetree-ai-plugins-email-domain-reputation"
-version = "0.1.0"
+version = "1.0.0"
 source = { editable = "plugins/email-domain-reputation" }
 dependencies = [
     { name = "dnspython" },

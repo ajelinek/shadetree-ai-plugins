@@ -1,0 +1,33 @@
+Delivered-To: auditor.inbox@gmail.example
+Received: by 2002:a05:6a10:1234:b0:5f1:abcd:ef01 with SMTP id x12csp999pxb;
+        Thu, 19 Nov 2026 09:00:05 -0800 (PST)
+Return-Path: <bounce+a1b2c3=auditor.inbox=gmail.example@mg.esp-mail.example>
+Received: from m42-7.mg.esp-mail.example (m42-7.mg.esp-mail.example. [198.51.100.42])
+        by mx.google.com with ESMTPS id b2si55qkc.300.2026.11.19.09.00.04
+        for <auditor.inbox@gmail.example>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 19 Nov 2026 09:00:04 -0800 (PST)
+Authentication-Results: mx.google.com;
+       dkim=pass header.i=@clientco.example header.s=k1 header.b=Zz11;
+       dkim=pass header.i=@mg.esp-mail.example header.s=esp1 header.b=Yy22;
+       spf=pass (google.com: domain of bounce+a1b2c3=auditor.inbox=gmail.example@mg.esp-mail.example designates 198.51.100.42 as permitted sender) smtp.mailfrom="bounce+a1b2c3=auditor.inbox=gmail.example@mg.esp-mail.example";
+       dmarc=pass (p=QUARANTINE sp=QUARANTINE dis=NONE) header.from=clientco.example
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=clientco.example;
+ q=dns/txt; s=k1; t=1763571604;
+ h=List-Unsubscribe-Post: List-Unsubscribe: Message-Id: Date: Subject:
+ From: To: Sender; bh=abc=; b=Sig1
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.esp-mail.example;
+ q=dns/txt; s=esp1; t=1763571604; h=Subject: To: Sender; bh=abc=; b=Sig2
+List-Unsubscribe: <mailto:unsub-a1b2c3@mg.esp-mail.example>,
+ <https://email.clientco.example/u/a1b2c3?token=SECRET-TOKEN>
+List-Unsubscribe-Post: List-Unsubscribe=One-Click
+Sender: news=clientco.example@mg.esp-mail.example
+From: ClientCo News <news@clientco.example>
+To: auditor.inbox@gmail.example
+Subject: November newsletter
+Date: Thu, 19 Nov 2026 17:00:04 +0000
+Message-Id: <20261119170004.a1b2c3@clientco.example>
+Mime-Version: 1.0
+Content-Type: text/html; charset="utf-8"
+
+<p>SECRET-BODY-MARKER newsletter</p>

@@ -1,10 +1,23 @@
 {
   "name": "email-domain-reputation",
-  "version": "0.1.0",
-  "description": "Investigate one email address with AbstractAPI reputation and live mail-DNS checks; get an evidence-led assessment and next steps. Local MCP server, OS-keychain credentials, and keyless domain audits.",
-  "author": { "name": "ajelinek" },
+  "version": "1.0.0",
+  "description": "Client email domain health audit for IT providers: SPF, DKIM, DMARC, MX, MTA-STS, TLS-RPT, BIMI, DNSSEC, DNS blocklists, registration expiry, and a pasted test message's verdict, with severity-ranked findings and DNS fixes. Also evidence-led triage of one inbound address via AbstractAPI. Local MCP server, OS-keychain credentials, and keyless DNS-only domain audits.",
+  "author": {
+    "name": "ajelinek"
+  },
   "homepage": "https://github.com/ajelinek/shadetree-ai-plugins",
   "repository": "https://github.com/ajelinek/shadetree-ai-plugins",
   "license": "MIT",
-  "keywords": ["email", "reputation", "spf", "dmarc", "dkim", "dns", "keychain"]
+  "keywords": [
+    "blocklist",
+    "deliverability",
+    "dkim",
+    "dmarc",
+    "dns",
+    "email",
+    "keychain",
+    "mta-sts",
+    "reputation",
+    "spf"
+  ]
 }
