@@ -38,8 +38,15 @@
 - Untrusted input and hostile records are bounded: SPF stops expanding at
   the lookup limit, a pasted message contributes at most 20 DKIM selectors,
   sending-IP discovery is capped, and names are checked before any query.
+- New keyless troubleshooting tools: `analyze_headers` (pasted message,
+  parsed locally), `check_blocklists` (with an optional `resolver` to
+  re-check through a local or ISP resolver) and `check_registration`.
+- New `references/troubleshooting.md`: a symptom → evidence → tool map
+  (bounces, junk, missing mail, forwarding, spoofing, devices that can't
+  send) and Gmail, Microsoft 365 and Yahoo bounce-code tables.
 - Reputation requests also report `network_error` when the HTTP layer
   fails mid-request.
+- Added the ShadeTree IT icon (`.claude-plugin/icon.png`).
 
 ## 0.1.0 — 2026-10-30
 

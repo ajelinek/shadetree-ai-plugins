@@ -8,7 +8,9 @@ description: >
   fixes. Use for "audit my client's email domain", "why is their mail going
   to spam", "check deliverability for X", "are they on a blocklist", "are
   they ready for the Gmail/Yahoo/Microsoft bulk sender rules", "check
-  SPF/DKIM/DMARC for X", or "analyze these message headers". Also triages
+  SPF/DKIM/DMARC for X", "analyze these message headers", "why did this
+  bounce", "what does this NDR / 550 5.7.x error mean", or "why did this
+  message land in junk". Also triages
   one unknown inbound sender ("is this sender legit", "check this email
   address") with evidence, not a trust verdict. Uses this plugin's local MCP
   tools; the API key stays in the OS keychain, and DNS-only checks need no key.
@@ -28,6 +30,11 @@ checks yourself; don't ask the user to pick DNS checks or DKIM selectors.
 - **Client domain health audit (default).** The user supports the domain
   (a client's, or their own) and wants to know what to fix so its outbound
   mail stays trusted. Use rubric part A.
+- **Troubleshoot one symptom.** A bounce, an NDR code, a message in junk,
+  mail that never arrived, or one platform failing. Follow
+  [references/troubleshooting.md](references/troubleshooting.md): decode the
+  symptom, use the keyless tool that answers it, and escalate to the full
+  audit only when the cause looks domain-wide.
 - **Inbound sender triage.** The user received mail from someone else and
   wants to know what the evidence says. Use rubric part B.
 
@@ -81,9 +88,12 @@ If `ok` is false:
   source, not a Sent-folder copy. Don't guess a corrected address.
 
 There's no partial audit when the key or the API fails. If the user wants
-to continue without a key, offer `audit_domain(target, selectors)` and say
-plainly that it is DNS only: it has no blocklist, registration, or header
-checks, so the grade can't cover them.
+to continue without a key, offer the keyless tools together:
+`audit_domain(target, selectors)`, `check_blocklists(target, sending_ips)`,
+`check_registration(target)`, and `analyze_headers(raw_headers)` when a
+test message is available. Say plainly that the result has no reputation
+section and no cross-checks, and that `cross_checks.*` rules in the rubric
+can't be applied. Compare header and DNS fields by hand instead.
 
 ### Resolver caveat
 
@@ -92,8 +102,9 @@ large public resolvers (8.8.8.8, 1.1.1.1, 9.9.9.9). Each zone is probed with
 its always-listed test entry (`blocklists.resolver_canaries`). When a canary
 isn't `ok`, that zone's empty answers come back as `unreliable_resolver`
 with `listed: null`. Report those lists as unknown, never as clean. The
-tools use the machine's own resolver, so the re-check is to run again from a
-network with its own or an ISP resolver. `dns.dnssec.ad_flag` only means
+tools use the machine's own resolver. To re-check, call
+`check_blocklists(target, sending_ips, resolver)` with a local or ISP
+resolver IP the user names, or run again from another network. `dns.dnssec.ad_flag` only means
 something from a validating resolver; prefer
 `sections.registration.registration.dnssec_delegation_signed`.
 
@@ -123,7 +134,10 @@ the error the same way as above. Don't run `audit_domain` as a fallback.
 If the user has the received message, `audit_client_domain` with the
 sender's address and the pasted source adds the receiver's DMARC result
 (the strongest spoofing signal), blocklists, and registration, for the same
-single API request.
+single API request. To check only whether one received message is genuine,
+`analyze_headers` is enough and needs no key. Lead with
+`receiver_verdict.dmarc` and the `from.domain` vs `return_path.domain`
+alignment.
 
 Lead with **No red flags found**, **Caution**, **High risk**, or
 **Insufficient evidence**, then the specific signals and their fields, the

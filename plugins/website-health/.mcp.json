@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "website-health": {
+      "command": "uv",
+      "args": ["run", "--project", "${CLAUDE_PLUGIN_ROOT}", "--locked", "python", "-m", "shadetree_ai_plugins_website_health"]
+    }
+  }
+}

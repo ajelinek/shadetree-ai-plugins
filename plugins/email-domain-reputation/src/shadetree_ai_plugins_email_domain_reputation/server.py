@@ -8,6 +8,7 @@ from pathlib import Path
 from fastmcp import FastMCP
 from shadetree_ai_plugins_common.secrets import SecretStoreError, get_secret
 
+from . import _dns, blocklists, headers, registration
 from . import reputation as _reputation
 from .audit import guard_secret, run_audit, validate_inputs
 from .dns_auth import audit_dns, domain_from_arg, normalize_email, validate_selectors
@@ -25,8 +26,12 @@ mcp = FastMCP(
         "AbstractAPI key and the client's email address, and works best when the user pastes "
         "the original headers of a message the client sent (raw_headers). audit_domain is a "
         "keyless DNS-only audit of a domain. investigate_email triages one inbound address. "
-        "Stop on setup/API failures (setup_required, reputation_unavailable); do not "
-        "substitute DNS-only findings. Never ask for or accept API keys in chat; check_setup "
+        "For troubleshooting a single symptom without a key: analyze_headers parses a pasted "
+        "message locally (why it bounced, went to spam, or failed DMARC), check_blocklists "
+        "checks a domain and its sending IPs on DNSBLs, check_registration reads RDAP expiry "
+        "and holds. Stop on setup/API failures (setup_required, reputation_unavailable) of "
+        "audit_client_domain or investigate_email; do not silently substitute other tools' "
+        "findings for a full audit. Never ask for or accept API keys in chat; check_setup "
         "returns a local terminal command. Apply the bundled skill's evidence-led rubric; "
         "report evidence and fixes, not trust verdicts. Results cannot authenticate a "
         "particular message."
@@ -147,3 +152,60 @@ def audit_client_domain(target: str, raw_headers: str | None = None,
     audit = run_audit(target, raw_headers=raw_headers, selectors=selectors,
                       sending_ips=sending_ips, reputation_result=reputation)
     return {"ok": True, **audit}
+
+
+@mcp.tool(annotations={**READ_ONLY, "idempotentHint": True, "openWorldHint": False})
+def analyze_headers(raw_headers: str) -> dict:
+    """Parse a pasted received message (full source or header block, at most 256 KB).
+
+    Local only: no API key and no network request. Returns the receiving provider's
+    SPF/DKIM/DMARC/ARC/compauth results, From/Return-Path/DKIM d= alignment
+    (relaxed), the Received chain and likely sending IP, List-Unsubscribe and
+    one-click, and spam-filter headers (Microsoft BCL/SCL). Never returns the body,
+    Subject or unsubscribe URLs. Use it to explain why one message bounced, landed in
+    spam or failed DMARC, or whether a received message was spoofed. A copy from the
+    sender's Sent folder has no receiver results.
+    """
+    try:
+        report = headers.analyze_headers(raw_headers)
+    except ValueError as exc:
+        return {"ok": False, "error": "invalid_input", "detail": str(exc)}
+    return {"ok": True, "checked_at": datetime.now(UTC).isoformat(), "headers": report}
+
+
+@mcp.tool(annotations=READ_ONLY)
+def check_blocklists(target: str, sending_ips: list[str] | None = None,
+                     resolver: str | None = None) -> dict:
+    """Check a domain (or an address's domain) and its sending IPs on DNS blocklists.
+
+    No API key. Domain lists: Spamhaus DBL, SURBL, URIBL. IP lists: Spamhaus ZEN,
+    Barracuda, SpamCop, PSBL. IPs come from sending_ips (at most 20) plus the
+    domain's own SPF ip4/ip6/a/mx terms, each with PTR and forward-confirmed rDNS.
+    Each zone is canary-tested: through a refused or public resolver its results are
+    unknown (listed null), never clean. resolver is an optional resolver IP (a local
+    or ISP resolver) to re-check through; the default is the machine's resolver.
+    """
+    try:
+        if resolver is not None and not _dns.is_valid_resolver(resolver):
+            raise ValueError("resolver must be an IP address.")
+        report = blocklists.build_output(target, sending_ips or (), resolver)
+    except ValueError as exc:
+        return {"ok": False, "error": "invalid_input", "detail": str(exc)}
+    return {"ok": True, "checked_at": datetime.now(UTC).isoformat(), "blocklists": report}
+
+
+@mcp.tool(annotations=READ_ONLY)
+def check_registration(target: str) -> dict:
+    """Read the RDAP registration of a domain's organizational domain via rdap.org.
+
+    No API key. Returns registrar, created/expires, days_until_expiry, EPP statuses
+    with on_hold / pending_delete / transfer_locked flags, nameservers and the DNSSEC
+    delegation. Use it when a domain's mail or website stopped resolving, or to
+    check renewal risk. source.error not_found_or_no_rdap means unregistered or no
+    RDAP service (common for ccTLDs): check the registry's WHOIS instead.
+    """
+    try:
+        report = registration.build_output(target)
+    except ValueError as exc:
+        return {"ok": False, "error": "invalid_input", "detail": str(exc)}
+    return {"ok": True, "checked_at": datetime.now(UTC).isoformat(), **report}

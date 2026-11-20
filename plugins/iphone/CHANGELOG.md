@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.2 — 2026-11-19
+
+- Added the ShadeTree IT icon (`.claude-plugin/icon.png`).
+
 ## 0.2.1 -- 2026-11-19
 
 - Move the bridge app from `bin/` to `bridge/Shadetree iPhone Bridge.app`.

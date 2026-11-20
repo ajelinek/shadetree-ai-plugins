@@ -45,6 +45,11 @@
       "name": "email-domain-reputation",
       "source": "./plugins/email-domain-reputation",
       "description": "Client email domain health audit for IT providers: SPF, DKIM, DMARC, MX, MTA-STS, TLS-RPT, BIMI, DNSSEC, DNS blocklists, registration expiry, and a pasted test message's verdict, with severity-ranked findings and DNS fixes. Also evidence-led triage of one inbound address via AbstractAPI. Local MCP server, OS-keychain credentials, and keyless DNS-only domain audits."
+    },
+    {
+      "name": "website-health",
+      "source": "./plugins/website-health",
+      "description": "Cross-source website health checks: GA4, Search Console, Bing Webmaster Tools, Microsoft Clarity, CrUX/PageSpeed, a live-site probe (status, TLS, robots, sitemap, noindex/canonical, security headers), Firebase Auth signups, Safe Browsing and blocklists, plus optional Cloud Monitoring. Correlates regressions with GitHub deploys to trace them to the commit and propose a fix. Local MCP server; credentials in the OS keychain via an interactive doctor command."
     }
   ]
 }

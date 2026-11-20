@@ -58,6 +58,9 @@ All tools are read-only.
 | `audit_client_domain(target, raw_headers?, selectors?, sending_ips?)` | yes | The full health audit. `target` is an address at the client's domain. Returns `sections` (`dns`, `blocklists`, `registration`, `headers`, `reputation`), `section_errors`, `skipped`, and `cross_checks`. |
 | `audit_domain(target, selectors?)` | no | DNS only: MX, SPF, DMARC, DKIM, MTA-STS, TLS-RPT, BIMI, DNSSEC. No blocklist, registration, or header checks. |
 | `investigate_email(email, selectors?)` | yes | Inbound sender triage: AbstractAPI signals plus the domain's DNS checks. |
+| `analyze_headers(raw_headers)` | no | Parses a pasted received message locally (no network): the receiver's SPF/DKIM/DMARC/compauth, alignment, sending IP, unsubscribe and spam-filter headers. |
+| `check_blocklists(target, sending_ips?, resolver?)` | no | Domain and sending-IP DNSBLs with PTR/FCrDNS and resolver canaries. `resolver` re-checks through a named local or ISP resolver. |
+| `check_registration(target)` | no | RDAP registrar, expiry, EPP holds and locks, nameservers, DNSSEC delegation. |
 
 `raw_headers` is the pasted original message source (Gmail **Show
 original**, Outlook **View message source**). Headers only is fine, up to
@@ -78,6 +81,7 @@ listed".
 - "Why is client.example's mail going to spam?" Claude asks for an address
   and a test message, then runs the audit.
 - "Just check the DNS for client.example." Keyless `audit_domain`.
+- "Why did this bounce with 550 5.7.26?" or "Why is this in junk?" Paste the bounce or the received message; Claude decodes it with `analyze_headers` and the troubleshooting guide, no key needed.
 - "Is this sender legit? billing@vendor.example" Inbound triage.
 
 ## What data goes where

@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.7.1 — 2026-11-19
+
+- Added the ShadeTree IT icon (`.claude-plugin/icon.png`).
+
 ## 0.7.0 -- 2026-11-19
 
 **Renamed from `claude-usage-analyzer` to `ai-usage-analyzer`.** Plugin

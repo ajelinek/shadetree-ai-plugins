@@ -1,0 +1,13 @@
+[project]
+name = "shadetree-ai-plugins-website-health"
+version = "0.1.0"
+description = "Cross-source website health checks and deploy correlation with OS-keychain credentials."
+requires-python = ">=3.12"
+dependencies = ["fastmcp>=3.4", "keyring>=25.5.0", "google-auth>=2.30", "dnspython>=2.7,<3"]
+
+[build-system]
+requires = ["uv_build>=0.8.17,<0.9"]
+build-backend = "uv_build"
+
+[tool.uv.build-backend]
+module-name = ["shadetree_ai_plugins_website_health", "shadetree_ai_plugins_common"]

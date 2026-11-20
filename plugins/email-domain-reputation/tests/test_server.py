@@ -21,7 +21,8 @@ async def test_mcp_tools_never_accept_or_return_api_keys(monkeypatch):
     async with Client(module.mcp) as client:
         tools = await client.list_tools()
         assert {tool.name for tool in tools} == {
-            "check_setup", "investigate_email", "audit_domain", "audit_client_domain"}
+            "check_setup", "investigate_email", "audit_domain", "audit_client_domain",
+            "analyze_headers", "check_blocklists", "check_registration"}
         for tool in tools:
             assert "api_key" not in json.dumps(tool.input_schema)
             assert tool.annotations.read_only_hint is True
@@ -178,3 +179,84 @@ async def test_client_audit_success_returns_full_audit_without_key(monkeypatch):
     assert calls["reputation"] == [("Person@example.com", KEY)]
     assert len(report["cross_checks"]) == 7
     assert KEY not in json.dumps(report)
+
+
+FIXTURES = Path(__file__).parent / "fixtures" / "headers"
+
+
+async def call_tool(module, name, args):
+    async with Client(module.mcp) as client:
+        return (await client.call_tool(name, args)).data
+
+
+async def test_analyze_headers_is_local_and_keyless(monkeypatch):
+    module = server_module()
+    monkeypatch.setattr(keyring, "get_keyring", lambda: keyring.backends.fail.Keyring())
+
+    def no_network(*args, **kwargs):
+        raise AssertionError("analyze_headers must not query DNS")
+    monkeypatch.setattr(_module("_dns"), "query", no_network)
+    raw = (FIXTURES / "m365_dmarc_fail.eml").read_text()
+    report = await call_tool(module, "analyze_headers", {"raw_headers": raw})
+    assert report["ok"] is True
+    assert set(report) == {"ok", "checked_at", "headers"}
+    assert report["headers"]["from"]["domain"]
+    subject = next(line for line in raw.splitlines() if line.lower().startswith("subject:"))
+    assert subject.split(":", 1)[1].strip() not in json.dumps(report)
+
+
+@pytest.mark.parametrize("raw", ["", "no header block here", "x" * (256 * 1024 + 1)])
+async def test_analyze_headers_rejects_bad_input(raw):
+    report = await call_tool(server_module(), "analyze_headers", {"raw_headers": raw})
+    assert report["ok"] is False
+    assert report["error"] == "invalid_input"
+
+
+async def test_check_blocklists_keyless_with_explicit_resolver(monkeypatch):
+    module = server_module()
+    monkeypatch.setattr(keyring, "get_keyring", lambda: keyring.backends.fail.Keyring())
+    seen = []
+
+    def query(name, rtype, **kwargs):
+        seen.append(kwargs.get("resolver"))
+        return dict(NXDOMAIN, answers=[])
+    monkeypatch.setattr(_module("_dns"), "query", query)
+    report = await call_tool(module, "check_blocklists", {
+        "target": "example.com", "sending_ips": ["192.0.2.10"], "resolver": "192.0.2.53"})
+    assert report["ok"] is True
+    assert report["blocklists"]["domain"] == "example.com"
+    assert report["blocklists"]["resolver"] == "192.0.2.53"
+    assert seen and set(seen) == {"192.0.2.53"}
+
+
+@pytest.mark.parametrize("args", [
+    {"target": "example.com", "resolver": "dns.example"},
+    {"target": "example.com", "sending_ips": ["not-an-ip"]},
+    {"target": "bad domain"},
+])
+async def test_check_blocklists_rejects_bad_input_before_queries(monkeypatch, args):
+    module = server_module()
+    calls = []
+    monkeypatch.setattr(_module("_dns"), "query", fake_query(calls))
+    report = await call_tool(module, "check_blocklists", args)
+    assert report["ok"] is False
+    assert report["error"] == "invalid_input"
+    assert calls == []
+
+
+async def test_check_registration_keyless(monkeypatch):
+    module = server_module()
+    reg = _module("registration")
+    monkeypatch.setattr(reg, "build_output", lambda target: {
+        "domain": "mail.example.com", "registered_domain": "example.com",
+        "registration": {}, "source": {"ok": False, "error": "not_found_or_no_rdap",
+                                       "detail": None}})
+    report = await call_tool(module, "check_registration", {"target": "mail.example.com"})
+    assert report["ok"] is True
+    assert report["registered_domain"] == "example.com"
+    assert report["source"]["error"] == "not_found_or_no_rdap"
+
+
+async def test_check_registration_rejects_bad_domain():
+    report = await call_tool(server_module(), "check_registration", {"target": "bad domain"})
+    assert report == {"ok": False, "error": "invalid_input", "detail": report["detail"]}

@@ -95,3 +95,36 @@ def test_status_is_machine_readable_and_never_contains_the_value(monkeypatch, ca
     secrets.set_secret("demo", "api-key", "fixture-secret")
     assert module.main(["status", "demo", "api-key"]) == 0
     assert json.loads(capsys.readouterr().out) == {"configured": True}
+
+
+def test_set_file_stores_compact_json_and_offers_deletion(monkeypatch, tmp_path, capsys):
+    module = setup_module_under_test()
+    memory_backend(monkeypatch)
+    monkeypatch.setattr(module.sys.stdin, "isatty", lambda: True)
+    source = tmp_path / "key.json"
+    source.write_text('{\n  "type": "service_account",\n  "private_key": "fixture"\n}\n')
+    monkeypatch.setattr("builtins.input", lambda *args: "yes")
+    assert module.main(["set-file", "demo", "sa", str(source)]) == 0
+    stored = secrets.get_secret("demo", "sa")
+    assert json.loads(stored) == {"type": "service_account", "private_key": "fixture"}
+    assert " " not in stored and "\n" not in stored
+    assert not source.exists()
+    assert "fixture" not in capsys.readouterr().out
+
+
+def test_set_file_rejects_invalid_json_and_keeps_file(monkeypatch, tmp_path):
+    module = setup_module_under_test()
+    memory_backend(monkeypatch)
+    monkeypatch.setattr(module.sys.stdin, "isatty", lambda: True)
+    source = tmp_path / "key.json"
+    source.write_text("not json")
+    assert module.main(["set-file", "demo", "sa", str(source)]) == 1
+    assert secrets.get_secret("demo", "sa") is None
+    assert source.exists()
+
+
+def test_file_actions_require_a_path_and_plain_actions_refuse_one(monkeypatch):
+    module = setup_module_under_test()
+    memory_backend(monkeypatch)
+    assert module.main(["set-file", "demo", "sa"]) == 1
+    assert module.main(["status", "demo", "sa", "/tmp/x.json"]) == 1
