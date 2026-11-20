@@ -29,7 +29,7 @@ from shadetree_ai_plugins_common.secrets import (
 
 from . import config, credentials, google_auth, http
 from .credentials import NAMESPACE, Credential
-from .sources import bing, cloudflare, crux, ga4, gsc, sentry, stripe, uptime
+from .sources import bing, crux, ga4, gsc
 
 
 def _clean(value: str) -> bool:
@@ -80,10 +80,6 @@ VALIDATORS: dict[str, Callable[[str, dict], str]] = {
     "google-api-key": validate_api_key,
     "bing-api-key": validate_bing,
     "clarity-token": validate_clarity,
-    "cloudflare-token": lambda v, s: "token " + cloudflare.validate(v),
-    "stripe-key": lambda v, s: stripe.validate(v),
-    "sentry-token": lambda v, s: sentry.validate(v),
-    "uptimerobot-key": lambda v, s: uptime.validate(v),
 }
 
 

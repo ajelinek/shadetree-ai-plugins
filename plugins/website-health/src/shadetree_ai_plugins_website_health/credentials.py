@@ -47,21 +47,6 @@ CREDENTIALS: tuple[Credential, ...] = (
         "clarity-token", "Microsoft Clarity Data Export token", ("clarity",),
         "clarity.microsoft.com > project > Settings > Data Export > Generate new API token "
         "(project admin only).", per_site=True),
-    Credential(
-        "cloudflare-token", "Cloudflare API token (Analytics read)", ("cloudflare",),
-        "dash.cloudflare.com > My Profile > API Tokens > Create Token with "
-        "Zone > Analytics > Read for the site's zone."),
-    Credential(
-        "stripe-key", "Stripe restricted key (read-only)", ("stripe",),
-        "dashboard.stripe.com > Developers > API keys > Create restricted key with Read on "
-        "Charges, Checkout Sessions, Subscriptions and Events."),
-    Credential(
-        "sentry-token", "Sentry auth token", ("sentry",),
-        "sentry.io > User Settings > Personal Tokens (or an internal integration) with "
-        "org:read, project:read, event:read."),
-    Credential(
-        "uptimerobot-key", "UptimeRobot read-only API key", ("uptime",),
-        "uptimerobot.com > Integrations & API > API > Read-only API key."),
 )
 
 BY_KEY = {c.key: c for c in CREDENTIALS}

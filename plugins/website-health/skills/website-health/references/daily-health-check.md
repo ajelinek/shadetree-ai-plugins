@@ -42,7 +42,7 @@ Status, TLS days left, sitemap URLs (Δ), key-page changes, security headers
 | Clarity rage / dead / script-error % | | | | |
 | CrUX LCP / INP / CLS (p75, phone) | | | | good / needs improvement / poor |
 | Signups (Firebase) | | | | |
-| <optional: Stripe, Sentry, Cloudflare 5xx, uptime> | | | | |
+| <optional: Cloud Monitoring 5xx, uptime checks> | | | | |
 
 ## Watch (unconfirmed or low confidence)
 - <metric> - provisional until <date> / thresholded / Clarity gap

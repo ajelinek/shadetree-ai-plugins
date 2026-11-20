@@ -15,9 +15,8 @@ from ..store import Store
 
 MIN_POINTS = {"day": 7, "week": 3, "rolling24h": 5}
 LOWER_IS_BETTER = ("position", "crawlErrors", "crawl4xx", "crawl5xx", "Pct", "P75", "5xx",
-                   "4xx", "chargesFailed", "sentry.errors", "threats", "ttfbMs", "botShare",
-                   "subscriptionsCanceled", "malwarePages", "blockedByRobots")
-EXEMPT_LOWER = ("scrollDepthPct", "cacheRatio")
+                   "4xx", "ttfbMs", "botShare", "malwarePages", "blockedByRobots")
+EXEMPT_LOWER = ("scrollDepthPct",)
 
 
 def higher_is_better(metric: str) -> bool:

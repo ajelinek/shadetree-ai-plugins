@@ -49,7 +49,7 @@
     {
       "name": "website-health",
       "source": "./plugins/website-health",
-      "description": "Cross-source website health checks: GA4, Search Console, Bing Webmaster Tools, Microsoft Clarity, CrUX/PageSpeed, a live-site probe (status, TLS, robots, sitemap, noindex/canonical, security headers), Firebase Auth signups, Safe Browsing and blocklists, plus optional UptimeRobot, Cloudflare, Stripe and Sentry. Correlates regressions with GitHub deploys to trace them to the commit and propose a fix. Local MCP server; credentials in the OS keychain via an interactive doctor command."
+      "description": "Cross-source website health checks: GA4, Search Console, Bing Webmaster Tools, Microsoft Clarity, CrUX/PageSpeed, a live-site probe (status, TLS, robots, sitemap, noindex/canonical, security headers), Firebase Auth signups, Safe Browsing and blocklists, plus optional Cloud Monitoring. Correlates regressions with GitHub deploys to trace them to the commit and propose a fix. Local MCP server; credentials in the OS keychain via an interactive doctor command."
     }
   ]
 }

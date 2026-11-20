@@ -125,7 +125,7 @@ def discover_properties() -> dict:
             out[name] = {"error": str(exc)}
     out["serviceAccountEmail"] = google_auth.service_account_email()
     out["note"] = ("Clarity project IDs are in the Clarity URL (clarity.microsoft.com/projects/"
-                   "view/<id>); Cloudflare zone IDs are on the zone's Overview page.")
+                   "view/<id>).")
     return out
 
 
@@ -137,9 +137,8 @@ def configure_site(name: str, settings: dict[str, Any]) -> dict:
     ('sc-domain:x.com' or 'https://x.com/'), bingSiteUrl, clarityProjectId,
     firebaseProjectId, githubRepos ['org/repo'], keyPaths ['/', '/pricing'],
     contentMarkers {'/': 'text that must appear'}, cruxUrls, indexnowKey,
-    cloudflareZoneId, cloudMonitoringProjectId, cloudMonitoringQueries
-    (['uptime','hosting'] presets or custom), stripe (bool), sentryOrg,
-    sentryProject, sentryBaseUrl, uptimeRobotMonitorIds, safeBrowsing (bool),
+    cloudMonitoringProjectId, cloudMonitoringQueries
+    (['uptime','hosting'] presets or custom), safeBrowsing (bool),
     blocklists (bool), aiReferrers, correlation, anomalyThresholds. Use null to clear.
     """
     try:
@@ -180,8 +179,8 @@ def collect(site: str, sources: list[str] | None = None, backfill_days: int = 0,
     """Fetch sources for a site and upsert the history store.
 
     sources: subset of probe, blocklists, safebrowsing, indexnow, ga4, gsc,
-    firebase_auth, crux, clarity, bing, cloud_monitoring, uptime, cloudflare,
-    stripe, sentry (default: all ready ones). backfill_days widens sources that
+    firebase_auth, crux, clarity, bing, cloud_monitoring (default: all ready
+    ones). backfill_days widens sources that
     support history. Clarity is skipped if snapshotted <12h ago unless
     force_clarity (it has a hard 10 calls/day quota and no backfill).
     """

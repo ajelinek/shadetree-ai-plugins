@@ -35,9 +35,8 @@ apply.
 | probe `page_down`, `content_marker_missing` | the route file, build config, data fetch on that page |
 | `crux.*`, PSI `newlyFailing` audits | images (size, `loading`, dimensions → CLS), fonts (`font-display`, preload), new or heavy scripts, hydration directives, third-party tags |
 | `clarity.rageClickPct` / `deadClickPct` / `errorClickPct` on a page | the interactive component on that page: click handlers, disabled states, hydration of the island |
-| `clarity.scriptErrorPct`, `sentry.errors`, Sentry `new_issue` | the stack frame / `culprit`; the release in `firstRelease` |
-| `cloudflare.status5xx`, `cloud_monitoring.responses5xx`, uptime down | functions/SSR handlers, rewrites to functions, env/config changes |
-| `stripe.chargesFailed` up / `checkoutsCompleted` down | checkout session creation, price IDs, webhook handlers, success/cancel URLs |
+| `clarity.scriptErrorPct` | scripts and islands on the affected pages |
+| `cloud_monitoring.responses5xx`, `uptimeCheckPassed` down | functions/SSR handlers, rewrites to functions, env/config changes |
 
 ## Confidence
 

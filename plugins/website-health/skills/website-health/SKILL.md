@@ -6,7 +6,7 @@ description: >
   Console, Bing Webmaster Tools, Microsoft Clarity, CrUX/PageSpeed Insights,
   a live-site probe (status, TLS, robots, sitemap, noindex/canonical,
   security headers), Firebase Auth signups, Safe Browsing, DNS blocklists
-  and optional UptimeRobot/Cloudflare/Stripe/Sentry/Cloud Monitoring data,
+  and optional Cloud Monitoring data,
   then correlates anomalies with GitHub deploys, PRs and commits. Trigger on
   "website health check", "daily site check", "why did traffic / clicks /
   conversions / signups drop", "did the deploy break anything", "check my
@@ -36,7 +36,7 @@ or `setup_required` (a keychain credential is missing).
   Search Console sites and Bing sites the stored credentials can see, then
   `configure_site`. Ask the user for anything discovery can't show (Clarity
   project ID, Firebase project ID, GitHub repos, key pages, content markers,
-  Cloudflare zone, Sentry org/project, UptimeRobot monitor IDs). Migrating
+  Cloud Monitoring project). Migrating
   from the old skill: `import_legacy_config` on
   `.claude/website-health-analytics.json`.
 - A source that isn't configured is simply skipped. Don't block a check on

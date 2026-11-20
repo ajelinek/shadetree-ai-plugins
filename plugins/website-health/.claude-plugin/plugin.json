@@ -1,7 +1,7 @@
 {
   "name": "website-health",
   "version": "0.1.0",
-  "description": "Cross-source website health checks: GA4, Search Console, Bing Webmaster Tools, Microsoft Clarity, CrUX/PageSpeed, a live-site probe, Firebase Auth and optional uptime/Cloudflare/Stripe/Sentry, correlated with GitHub deploys to trace regressions to code. Local MCP server, OS-keychain credentials.",
+  "description": "Cross-source website health checks: GA4, Search Console, Bing Webmaster Tools, Microsoft Clarity, CrUX/PageSpeed, a live-site probe, Firebase Auth and optional Cloud Monitoring, correlated with GitHub deploys to trace regressions to code. Local MCP server, OS-keychain credentials.",
   "author": { "name": "ajelinek" },
   "homepage": "https://github.com/ajelinek/shadetree-ai-plugins",
   "repository": "https://github.com/ajelinek/shadetree-ai-plugins",

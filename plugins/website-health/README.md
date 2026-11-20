@@ -3,7 +3,7 @@
 Cross-source website health checks for Claude: GA4, Google Search Console,
 Bing Webmaster Tools, Microsoft Clarity, CrUX/PageSpeed Insights, a live-site
 probe, Firebase Auth signups, Safe Browsing and DNS blocklists, plus optional
-UptimeRobot, Cloud Monitoring, Cloudflare, Stripe and Sentry. Regressions are
+Cloud Monitoring (Firebase Hosting status codes and uptime checks). Regressions are
 correlated with GitHub deploys, PRs and commits so Claude can point at the
 change that caused them and propose a fix.
 

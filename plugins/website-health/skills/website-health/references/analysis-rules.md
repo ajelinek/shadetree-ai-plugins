@@ -32,7 +32,7 @@ Sources see a regression at different speeds. When several agree in this
 order, that sequence is the strongest evidence a claim can have:
 
 1. **probe**: minutes
-2. **sentry, uptime, cloudflare, stripe, cloud_monitoring**: hours, daily rows
+2. **cloud_monitoring**: hours, daily rows
 3. **clarity**: rolling 24h
 4. **ga4**: ~12h, revised for 24–48h, late hits for up to 7 days
 5. **gsc, bing**: 2–3 days (`correlate` widens its look-back by 72h)

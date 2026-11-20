@@ -17,10 +17,6 @@ one. Values go only to the OS keychain under
 | `google-api-key` | crux, psi, safebrowsing | Cloud Console → APIs & Services → Credentials → Create credentials → API key. Restrict it to Chrome UX Report API, PageSpeed Insights API and Safe Browsing API. |
 | `bing-api-key` | bing | bing.com/webmasters → Settings (gear) → API Access → API Key. |
 | `clarity-token.<site>` | clarity | clarity.microsoft.com → project → Settings → Data Export → Generate new API token. Project admins only. Doctor only lists this once the site has `clarityProjectId`. |
-| `cloudflare-token` | cloudflare | dash.cloudflare.com → My Profile → API Tokens → Create Token with Zone → Analytics → Read for the zone. |
-| `stripe-key` | stripe | Dashboard → Developers → API keys → Create restricted key with Read on Charges, Checkout Sessions, Subscriptions and Events. |
-| `sentry-token` | sentry | User Settings → Personal Tokens with `org:read`, `project:read`, `event:read`. |
-| `uptimerobot-key` | uptime | Integrations & API → API → Read-only API key. |
 
 **Browser help.** If you're helping in the browser, navigate only as far as
 the page that shows the key. The user copies it into doctor. Never read a key
@@ -81,11 +77,7 @@ A 403 in `collect` results carries a `fix` line naming the missing grant.
 | `contentMarkers` | `{"/pricing": "Start free trial"}` | probe (text that must appear) |
 | `cruxUrls` | `["/pricing"]` | URL-level CrUX (often insufficient traffic) |
 | `indexnowKey` | 8–128 chars, file at `/<key>.txt` | indexnow |
-| `cloudflareZoneId` | zone Overview page | cloudflare |
 | `cloudMonitoringProjectId` + `cloudMonitoringQueries` | `["uptime", "hosting"]` | cloud_monitoring |
-| `stripe` | `true` | stripe |
-| `sentryOrg`, `sentryProject`, `sentryBaseUrl` | `acme`, `web`, `https://sentry.io` | sentry |
-| `uptimeRobotMonitorIds` | `[798123]` | uptime |
 | `safeBrowsing`, `blocklists` | `true` | on by default |
 | `anomalyThresholds` | `{"gsc.clicks": {...}}` | override defaults |
 

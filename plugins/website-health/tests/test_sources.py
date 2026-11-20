@@ -6,14 +6,11 @@ from shadetree_ai_plugins_website_health.sources import (
     bing,
     clarity,
     cloud_monitoring,
-    cloudflare,
     crux,
     firebase_auth,
     ga4,
     gsc,
     psi,
-    sentry,
-    stripe,
 )
 
 
@@ -140,18 +137,6 @@ def test_psi_summary_lists_failing_audits():
     assert [a["id"] for a in s["failingAudits"]] == ["render-blocking-resources"]
 
 
-def test_cloudflare_status_buckets():
-    data = {"data": {"viewer": {"zones": [{"httpRequests1dGroups": [{
-        "dimensions": {"date": "2026-01-01"},
-        "sum": {"requests": 100, "cachedRequests": 40, "threats": 1, "pageViews": 30,
-                "responseStatusMap": [{"edgeResponseStatus": 200, "requests": 90},
-                                      {"edgeResponseStatus": 503, "requests": 6},
-                                      {"edgeResponseStatus": 404, "requests": 4}]},
-        "uniq": {"uniques": 20}}]}]}}}
-    rows = {r.metric: r.value for r in cloudflare.parse(data)}
-    assert rows["cloudflare.status5xx"] == 6 and rows["cloudflare.cacheRatio"] == 40
-
-
 def test_cloud_monitoring_groups_status_classes():
     data = {"timeSeries": [
         {"metric": {"labels": {"status": "503"}},
@@ -163,22 +148,3 @@ def test_cloud_monitoring_groups_status_classes():
     rows = {(r.metric, r.dim): r.value for r in cloud_monitoring.parse(data, "responses", "UTC")}
     assert rows["cloud_monitoring.responses5xx", ""] == 3
     assert rows["cloud_monitoring.responses", "status=2xx"] == 97
-
-
-def test_stripe_aggregates_daily_business_signals():
-    t = int(datetime.now(UTC).timestamp())
-    rows = stripe.aggregate(
-        [{"created": t, "status": "succeeded", "amount": 2000, "amount_refunded": 0,
-          "currency": "usd"}, {"created": t, "status": "failed", "amount": 2000}],
-        [{"created": t, "status": "complete"}, {"created": t, "status": "open"}], [],
-        "UTC", datetime.now(UTC).date().isoformat())
-    got = {(r.metric, r.dim): r.value for r in rows}
-    assert got["stripe.chargesSucceeded", ""] == 1 and got["stripe.chargesFailed", ""] == 1
-    assert got["stripe.checkoutsStarted", ""] == 2 and got["stripe.revenue", "currency=USD"] == 20
-
-
-def test_sentry_counts_only_accepted_outcome():
-    data = {"intervals": ["2026-01-01T00:00:00Z"], "groups": [
-        {"by": {"outcome": "accepted"}, "series": {"sum(quantity)": [12]}},
-        {"by": {"outcome": "rate_limited"}, "series": {"sum(quantity)": [99]}}]}
-    assert [r.value for r in sentry.parse_stats(data, "UTC")] == [12]

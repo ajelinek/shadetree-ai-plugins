@@ -55,15 +55,8 @@ DEFAULT_THRESHOLDS: dict[str, dict[str, Any]] = {
                     "critical": 0.25},
     "crux.clsP75": {"method": "absoluteDelta", "baselineDays": 4, "warn": 0.03,
                     "critical": 0.08},
-    "cloudflare.status5xx": {"method": "zscore", "baselineDays": 28, "warn": 2.5,
-                             "critical": 4.0},
     "cloud_monitoring.responses5xx": {"method": "zscore", "baselineDays": 28, "warn": 2.5,
                                       "critical": 4.0},
-    "stripe.chargesSucceeded": {"method": "percentChange", "baselineDays": 14, "warn": 0.30,
-                                "critical": 0.60},
-    "stripe.chargesFailed": {"method": "zscore", "baselineDays": 28, "warn": 2.5,
-                             "critical": 4.0},
-    "sentry.errors": {"method": "zscore", "baselineDays": 28, "warn": 2.5, "critical": 4.0},
 }
 
 DEFAULT_SITE: dict[str, Any] = {
@@ -80,14 +73,8 @@ DEFAULT_SITE: dict[str, Any] = {
     "contentMarkers": {},
     "cruxUrls": [],
     "indexnowKey": None,
-    "cloudflareZoneId": None,
     "cloudMonitoringProjectId": None,
     "cloudMonitoringQueries": [],
-    "stripe": False,
-    "sentryOrg": None,
-    "sentryProject": None,
-    "sentryBaseUrl": "https://sentry.io",
-    "uptimeRobotMonitorIds": [],
     "safeBrowsing": True,
     "blocklists": True,
     "aiReferrers": AI_REFERRERS,
@@ -97,11 +84,10 @@ DEFAULT_SITE: dict[str, Any] = {
 
 STRING_FIELDS = {"url", "timezone", "ga4PropertyId", "ga4SignupEvent", "gscSiteUrl",
                  "bingSiteUrl", "clarityProjectId", "firebaseProjectId", "indexnowKey",
-                 "cloudflareZoneId", "cloudMonitoringProjectId", "sentryOrg", "sentryProject",
-                 "sentryBaseUrl"}
-LIST_FIELDS = {"githubRepos", "keyPaths", "cruxUrls", "uptimeRobotMonitorIds", "aiReferrers",
+                 "cloudMonitoringProjectId"}
+LIST_FIELDS = {"githubRepos", "keyPaths", "cruxUrls", "aiReferrers",
                "cloudMonitoringQueries"}
-BOOL_FIELDS = {"stripe", "safeBrowsing", "blocklists"}
+BOOL_FIELDS = {"safeBrowsing", "blocklists"}
 DICT_FIELDS = {"contentMarkers", "correlation", "anomalyThresholds"}
 
 

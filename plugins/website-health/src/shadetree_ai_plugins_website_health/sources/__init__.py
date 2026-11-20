@@ -5,7 +5,6 @@ from . import (
     blocklists,
     clarity,
     cloud_monitoring,
-    cloudflare,
     crux,
     firebase_auth,
     ga4,
@@ -13,11 +12,8 @@ from . import (
     indexnow,
     probe,
     safebrowsing,
-    sentry,
-    stripe,
-    uptime,
 )
 
 REGISTRY = {m.NAME: m for m in (
     probe, blocklists, safebrowsing, indexnow, ga4, gsc, firebase_auth, crux, clarity, bing,
-    cloud_monitoring, uptime, cloudflare, stripe, sentry)}
+    cloud_monitoring)}

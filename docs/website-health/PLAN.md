@@ -41,10 +41,6 @@ never passes through chat, tool arguments or files. That's the repo's rule
 | `google-api-key` | CrUX, PageSpeed Insights, Safe Browsing | Cloud Console → Credentials → API key, restricted to those three APIs. |
 | `clarity-token:<site>` | Microsoft Clarity | Clarity project → Settings → Data Export → Generate token. This needs project-admin rights. |
 | `bing-api-key` | Bing Webmaster Tools | Bing Webmaster Tools → Settings → API Access → API Key. |
-| `cloudflare-token` | Cloudflare GraphQL | Cloudflare → My Profile → API Tokens, with **Account Analytics: Read** and **Zone Analytics: Read** scoped to the zone. |
-| `stripe-key` | Stripe | Dashboard → Developers → API keys → **restricted** key with read access to Charges, Checkout Sessions and Subscriptions. |
-| `sentry-token` | Sentry | User Settings → Auth Tokens, with `org:read`, `project:read` and `event:read`. |
-| `uptimerobot-key` | UptimeRobot | My Settings → API → **read-only** main API key. |
 
 **Microsoft sources across accounts.** Both work like the service
 account: the credential isn't tied to whoever is signed in.
@@ -69,10 +65,6 @@ in your own terminal. `check_setup` returns that exact command. Doctor:
    - Google service account: mint a token, then call `accountSummaries`
    - Google API key: a CrUX query
    - Bing: `GetUserSites`
-   - Cloudflare: `/user/tokens/verify`
-   - Stripe: `/v1/balance`
-   - Sentry: `/api/0/`
-   - UptimeRobot: `getAccountDetails`
 
    Clarity isn't validated, because every call uses one of its 10 daily
    requests. Doctor only checks the token's format.
@@ -111,7 +103,7 @@ plugins/website-health/
     quota.py         # per-source call budgets (Clarity 3/day, URL Inspection, PSI)
     sources/ ga4.py gsc.py clarity.py bing.py firebase_auth.py github.py crux.py psi.py
              probe.py links.py safebrowsing.py blocklists.py indexnow.py
-             uptime.py cloud_monitoring.py cloudflare.py stripe.py sentry.py
+             cloud_monitoring.py
     analysis/ normalize.py anomalies.py correlate.py   # ports of the .mjs scripts
   skills/website-health/SKILL.md + references/
   tests/fixtures/<source>/…  tests/test_<module>.py  tests/test_server.py
@@ -154,11 +146,8 @@ and its error mapping.
 | Safe Browsing | v4 `threatMatches:find` (v5 needs client-side hash-prefix handling; revisit if v4 is retired) | flagged or clean. The report notes that the API is licensed for non-commercial use and that Web Risk is the paid alternative for businesses. |
 | Blocklists | DNSBL lookups, ported from the skills-stash `check_blocklists.py` | the domain's blocklist status |
 | IndexNow | Checks that the key file is reachable, and submits URLs when you confirm | key status |
-| Uptime | UptimeRobot `getMonitors`, or Cloud Monitoring uptime checks | uptime % and incidents |
+| Uptime | Cloud Monitoring uptime checks | uptime % and incidents |
 | Firebase Hosting | Cloud Monitoring `response_count` by status. This needs Cloud Logging linked to Hosting. | 2xx, 3xx, 4xx and 5xx counts |
-| Cloudflare | GraphQL `httpRequests1dGroups` | requests, cache ratio, threats, 4xx and 5xx |
-| Stripe | Charges, Checkout Sessions and Subscriptions, listed per day | revenue, checkouts started and completed, failed payments, churn |
-| Sentry | `stats_v2` plus top issues for the project | error events, new issues, release correlation |
 | AI visibility | The GA4 AI-referrer report, plus a monthly reminder in the report to check Bing AI Performance and the Search Console generative-AI report by hand | AI-referred sessions |
 
 ## Analysis changes
@@ -170,7 +159,7 @@ and its error mapping.
 - **Lag order:** correlation follows the order in which sources see a
   regression, from fastest to slowest:
   1. the live probe (minutes)
-  2. Clarity and Sentry (about 24 hours)
+  2. Clarity (about 24 hours)
   3. GA4 (about 12–48 hours)
   4. Search Console and Bing (2–3 days)
   5. CrUX (weeks)
@@ -186,8 +175,6 @@ and its error mapping.
   - probe regression → `firebase.json`, the layout's `<head>`, `robots.txt`
   - CWV and PageSpeed audit → images, fonts and scripts
   - Clarity rage clicks → the component on that URL
-  - Sentry → the stack frame
-  - Stripe → checkout code
 
 ## Build sequence
 
@@ -202,7 +189,7 @@ Each phase is a commit and leaves tests green.
 4. **Google sources:** GA4, Search Console with URL Inspection, Firebase
    Auth, CrUX, PageSpeed Insights, Safe Browsing, and Cloud Monitoring.
 5. **Microsoft sources:** Clarity and Bing, plus IndexNow.
-6. **Optional sources:** UptimeRobot, Cloudflare, Stripe and Sentry.
+6. **Optional sources:** none beyond Cloud Monitoring (UptimeRobot, Cloudflare, Stripe and Sentry were dropped).
 7. **Report and skill:** `health_report` and the skill with its
    references (ported and updated, including `keyEvents`).
 8. **Release prep:**

@@ -20,11 +20,7 @@ Metric names are `<source>.<name>`. `dim` is `""` for site totals, otherwise
 | `clarity.scrollDepthPct`, `activeTime`, `totalTime` | rolling24h | Engagement. Time units as Clarity reports them. |
 | `crux.lcpP75`, `inpP75`, `clsP75`, `fcpP75`, `ttfbP75` | week | Field p75 over a 28-day window, phone origin for the total. Good ≤ 2500 ms LCP, ≤ 200 ms INP, ≤ 0.1 CLS. |
 | `probe.up`, `ttfbMs`, `tlsDaysLeft`, `sitemapUrls` | day | Live probe (one value per day, last run wins). |
-| `cloudflare.requests`, `pageViews`, `uniques`, `threats`, `cacheRatio`, `status4xx`, `status5xx` | day | Cloudflare edge analytics, only if the site is proxied. |
 | `cloud_monitoring.responses5xx`, `responses` (`status=`), `uptimeCheckPassed` | day | Cloud Monitoring queries (Firebase Hosting log metric, uptime checks). |
-| `uptime.ratio24h` (`monitor=`) | day | UptimeRobot 24h uptime %. |
-| `stripe.chargesSucceeded`, `chargesFailed`, `checkoutsStarted`, `checkoutsCompleted`, `subscriptionsCanceled`, `revenue` | day | Stripe, net of refunds for revenue; today provisional. |
-| `sentry.errors` | day | Accepted error events for the project; today provisional. |
 
 ## Tier-specific usage ("$20 tier")
 

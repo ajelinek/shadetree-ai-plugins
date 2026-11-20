@@ -16,9 +16,8 @@ from .. import dates
 
 GH_TIMEOUT = 30
 # Extra hours of look-back per source, on top of correlation.windowHours.
-SOURCE_LAG_HOURS = {"probe": 0, "sentry": 0, "clarity": 24, "ga4": 24, "firebase_auth": 0,
-                    "stripe": 0, "cloudflare": 0, "cloud_monitoring": 0, "uptime": 0,
-                    "gsc": 72, "bing": 72, "crux": 24 * 28}
+SOURCE_LAG_HOURS = {"probe": 0, "clarity": 24, "ga4": 24, "firebase_auth": 0,
+                    "cloud_monitoring": 0, "gsc": 72, "bing": 72, "crux": 24 * 28}
 
 
 class GhError(RuntimeError):
