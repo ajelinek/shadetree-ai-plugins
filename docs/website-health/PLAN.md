@@ -151,7 +151,7 @@ and its error mapping.
 | Live probe | stdlib `ssl`, `socket`, `urllib` and `html.parser` | uptime, TTFB, TLS days left, sitemap URL count, regression flags |
 | CrUX | `queryRecord` by origin and key URLs, and `queryHistoryRecord`, for both PHONE and DESKTOP | LCP, INP, CLS, FCP and TTFB at p75 over a rolling 28-day window. Treats a 404 as low traffic. |
 | PageSpeed Insights | `runPagespeed` on key URLs, triggered by deploys | Lighthouse scores, plus a diff of failing audits |
-| Safe Browsing | v5 `hashes:search`, falling back to v4 | flagged or clean. The report notes that the API is licensed for non-commercial use and that Web Risk is the paid alternative for businesses. |
+| Safe Browsing | v4 `threatMatches:find` (v5 needs client-side hash-prefix handling; revisit if v4 is retired) | flagged or clean. The report notes that the API is licensed for non-commercial use and that Web Risk is the paid alternative for businesses. |
 | Blocklists | DNSBL lookups, ported from the skills-stash `check_blocklists.py` | the domain's blocklist status |
 | IndexNow | Checks that the key file is reachable, and submits URLs when you confirm | key status |
 | Uptime | UptimeRobot `getMonitors`, or Cloud Monitoring uptime checks | uptime % and incidents |

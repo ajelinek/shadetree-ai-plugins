@@ -199,7 +199,7 @@ checkouts.
 | ~~`audiobook-creator`~~ | server-backed (long-running synthesis) — **done**, `plugins/audiobook-creator` |
 | ~~`email-domain-reputation`~~ | server-backed (API key → keychain) — **done**, `plugins/email-domain-reputation` |
 | `professional-writing` (from `jelinek-writing`) | server-backed (profile state) |
-| `website-health-analytics` | deferred — may not move |
+| ~~`website-health-analytics`~~ | server-backed (keychain + history store) — **done**, `plugins/website-health` |
 
 `imessage`, `icallhistory`, and `cc-data-analyzer` already made the trip,
 as `plugins/iphone` and `plugins/ai-usage-analyzer`.
