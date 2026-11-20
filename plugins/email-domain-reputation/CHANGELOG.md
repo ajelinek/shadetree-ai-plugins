@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.1 — 2026-11-19
+
+- Added the ShadeTree IT icon (`.claude-plugin/icon.png`).
+
 ## 0.1.0 — 2026-10-30
 
 - Migrated the reputation and mail-DNS skill to a local FastMCP plugin.

@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.3 — 2026-11-19
+
+- Added the ShadeTree IT icon (`.claude-plugin/icon.png`).
+
 ## 0.1.2 -- 2026-11-01
 
 - Bundle shared helpers and the startup hook as real files rather than

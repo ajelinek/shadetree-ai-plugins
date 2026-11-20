@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.1 — 2026-11-19
+
+- Added the ShadeTree IT icon (`.claude-plugin/icon.png`).
+
 ## 0.2.0 -- 2026-08-10
 
 Shared links and images are now collected, and images are actually looked at.
