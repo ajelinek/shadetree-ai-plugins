@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.7.2 — 2026-11-20
+
+- Removed the unsupported `$schema` key from `plugin.json` and shortened the plugin description to the 500-character limit.
+
 ## 0.7.1 — 2026-11-19
 
 - Added the ShadeTree IT icon (`.claude-plugin/icon.png`).

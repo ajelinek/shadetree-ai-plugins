@@ -1,25 +1,24 @@
 ---
 name: audiobook-creator
-description: >
+description: >-
   Converts a document's text into a real, chaptered .m4b audiobook using
   local, offline neural TTS (Kokoro-82M) -- no cloud API, no per-use cost, no
-  text ever leaving the machine. Supports two modes: Plain narration
-  (exact-text reading, one voice, maximum fidelity) and Story mode (rewrites
-  dry/dense source material into an engaging themed narrative -- noir
-  detective, true-crime podcast, kids' bedtime story, sports-commentary
-  energy, whatever theme the user names -- with automatic narrator/character
-  multi-voice assignment). Output is one .m4b file with chapter markers
-  embedded via FFMETADATA1 (not raw MP3s or an .m3u playlist), so it gets
-  real chapter navigation, resume position, and speed controls in Apple
-  Books, Podcasts, Overcast, and other audiobook apps. Trigger this whenever
-  the user wants to listen to a document instead of reading it -- "turn this
-  into an audiobook," "make this something I can listen to on my
-  commute/drive/walk," "read this to me," "narrate this doc," "convert this
-  report into a story," mentions of .m4b / audiobook / TTS / text-to-speech /
-  narration applied to a document, or dry/technical source material they want
-  turned into something more engaging to listen to. Also trigger when they
-  want the result delivered to a specific folder (e.g. one synced to their
-  phone via OneDrive) rather than left in the working directory.
+  text leaving the machine. Two modes: Plain narration (exact text, one voice)
+  and Story mode (rewrites dry source material into an engaging themed
+  narrative with automatic narrator/character multi-voice assignment). Output
+  is one .m4b with embedded chapter markers (FFMETADATA1), so it gets chapter
+  navigation, resume position, and speed controls in Apple Books, Podcasts,
+  Overcast, and other audiobook apps.
+when_to_use: >-
+  Trigger whenever the user wants to listen to a document instead of reading
+  it: "turn this into an audiobook", "make this something I can listen to on
+  my commute/drive/walk", "read this to me", "narrate this doc", "convert this
+  report into a story", or any mention of .m4b / audiobook / TTS /
+  text-to-speech / narration applied to a document, or dry/technical source
+  material they want turned into something more engaging to listen to. Also
+  trigger when they want the result delivered to a specific folder (e.g. one
+  synced to their phone via OneDrive) rather than left in the working
+  directory.
 ---
 
 # Audiobook Creator

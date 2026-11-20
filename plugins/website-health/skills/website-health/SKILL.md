@@ -1,23 +1,22 @@
 ---
 name: website-health
-description: >
+description: >-
   Run cross-source website health checks and turn regressions into concrete
   code fixes. Uses this plugin's local MCP tools to pull GA4, Google Search
-  Console, Bing Webmaster Tools, Microsoft Clarity, CrUX/PageSpeed Insights,
-  a live-site probe (status, TLS, robots, sitemap, noindex/canonical,
-  security headers), Firebase Auth signups, Safe Browsing, DNS blocklists
-  and optional Cloud Monitoring data, plus an account-free site audit (SEO,
-  accessibility, performance, AI-bot access) and PageSpeed trends,
-  then correlates anomalies with GitHub deploys, PRs and commits. Trigger on
-  "website health check", "daily site check", "why did traffic / clicks /
-  conversions / signups drop", "did the deploy break anything", "check my
-  site after deploy", "Core Web Vitals", "is my site indexed", "Bing
-  traffic", "Clarity rage clicks", "broken links", "SEO regression",
-  "growth ideas from search data", "SEO audit", "site audit", "site
-  checkup", "page speed / performance review", "can AI crawlers see my
-  site", "GPTBot", "ClaudeBot", "is my site blocking AI bots", "llms.txt",
-  "AI search visibility", or "accessibility check". Credentials stay in the
-  OS keychain.
+  Console, Bing Webmaster Tools, Microsoft Clarity, CrUX/PageSpeed Insights, a
+  live-site probe, Firebase Auth signups, Safe Browsing, DNS blocklists and
+  optional Cloud Monitoring data, plus an account-free site audit (SEO,
+  accessibility, performance, AI-bot access), then correlates anomalies with
+  GitHub deploys, PRs and commits. Credentials stay in the OS keychain.
+when_to_use: >-
+  Trigger on "website health check", "daily site check", "why did traffic /
+  clicks / conversions / signups drop", "did the deploy break anything",
+  "check my site after deploy", "Core Web Vitals", "is my site indexed", "Bing
+  traffic", "Clarity rage clicks", "broken links", "SEO regression", "growth
+  ideas from search data", "SEO audit", "site audit", "site checkup", "page
+  speed / performance review", "can AI crawlers see my site", "GPTBot",
+  "ClaudeBot", "is my site blocking AI bots", "llms.txt", "AI search
+  visibility", or "accessibility check".
 ---
 
 # Website health

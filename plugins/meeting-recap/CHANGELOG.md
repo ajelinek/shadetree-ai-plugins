@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.2 — 2026-11-20
+
+- Shortened the plugin description to 500 characters and the skill `description` to under 1024; trigger phrases moved to `when_to_use`.
+
 ## 0.2.1 — 2026-11-19
 
 - Added the ShadeTree IT icon (`.claude-plugin/icon.png`).

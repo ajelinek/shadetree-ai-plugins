@@ -1,28 +1,21 @@
 ---
 name: meeting-recap
-description: >
-  Turns a meeting/call transcript (pasted text, file, or VTT/SRT/Otter/Zoom/
-  Teams export) into a short, skimmable recap: decisions, action items
-  (owner + due date), topics, and open questions -- readable in under a
-  minute. Trigger on "summarize this meeting/call/transcript", "write
-  meeting notes/minutes", "what did we decide", "give me the action
-  items", "recap this standup/sync/1:1/interview", or when handed a
-  transcript. Also triggers when the user names a meeting instead of
-  supplying one ("recap this morning's architecture sync", "what did we
-  decide in the Teams call with the vendor") -- with a Microsoft 365
-  connector available it finds the meeting on the calendar and pulls the
-  Teams transcript, meeting chat, shared files, and related email itself.
-  Collects the links and images shared during the call -- including those
-  pasted in the meeting chat -- into their own lookup tables, opening the
-  images it can reach and describing what they actually show.
-  Distinguishes real decisions from mere discussion, never fabricates
-  names/owners/deadlines (flags UNASSIGNED/TBD/"unclear" instead of
-  guessing), never describes an image it couldn't open, tags anything
-  sourced outside the transcript, and scales
-  structure to meeting length via a sliding ruler -- same rigor from a
-  10-minute standup to a multi-day offsite, no rigid template. Not for
-  behavioral coaching feedback (filler words, speaking-time balance) --
-  strictly what happened, what was decided, and what's owed.
+description: >-
+  Turns a meeting/call transcript (pasted text, file, or
+  VTT/SRT/Otter/Zoom/Teams export) into a short, skimmable recap: decisions,
+  action items (owner + due date), topics, and open questions, readable in
+  under a minute. With a Microsoft 365 connector it can find a named meeting
+  on the calendar and pull its Teams transcript, chat, shared files, and
+  related email. Collects shared links and images into lookup tables, opening
+  the images it can reach. Never fabricates owners or deadlines; tags anything
+  sourced outside the transcript. Not for behavioral coaching feedback.
+when_to_use: >-
+  Trigger on "summarize this meeting/call/transcript", "write meeting
+  notes/minutes", "what did we decide", "give me the action items", "recap
+  this standup/sync/1:1/interview", or when handed a transcript. Also trigger
+  when the user names a meeting instead of supplying one ("recap this
+  morning's architecture sync", "what did we decide in the Teams call with the
+  vendor").
 ---
 
 # Meeting Recap

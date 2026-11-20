@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Shortened the skill `description` to under 1024 characters; trigger phrases moved to `when_to_use`.
+
 - `audit_site`: account-free crawl audit across `pages`, `ai` and `delivery` sections.
   Per-page SEO, accessibility, performance hints and mixed content; duplicate tags,
   broken and redirecting internal links, orphan pages and sitemap consistency; structured
